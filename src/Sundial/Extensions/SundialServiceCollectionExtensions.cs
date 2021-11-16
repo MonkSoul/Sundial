@@ -12,41 +12,41 @@ using System;
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// SchedulerJob 模块服务拓展
+    /// Sundial 模块服务拓展
     /// </summary>
-    public static class SchedulerJobServiceCollectionExtensions
+    public static class SundialServiceCollectionExtensions
     {
         /// <summary>
-        /// 添加 SchedulerJob 模块注册
+        /// 添加 Sundial 模块注册
         /// </summary>
         /// <param name="services">服务集合对象</param>
         /// <param name="configureOptionsBuilder">调度作业配置选项构建器委托</param>
         /// <returns>服务集合实例</returns>
-        public static IServiceCollection AddSchedulerJob(this IServiceCollection services, Action<SchedulerJobOptionsBuilder> configureOptionsBuilder)
+        public static IServiceCollection AddSundial(this IServiceCollection services, Action<SundialOptionsBuilder> configureOptionsBuilder)
         {
             // 创建初始调度作业配置选项构建器
-            var schedulerJobOptionsBuilder = new SchedulerJobOptionsBuilder();
-            configureOptionsBuilder.Invoke(schedulerJobOptionsBuilder);
+            var sundialOptionsBuilder = new SundialOptionsBuilder();
+            configureOptionsBuilder.Invoke(sundialOptionsBuilder);
 
-            return services.AddSchedulerJob(schedulerJobOptionsBuilder);
+            return services.AddSundial(sundialOptionsBuilder);
         }
 
         /// <summary>
-        /// 添加 SchedulerJob 模块注册
+        /// 添加 Sundial 模块注册
         /// </summary>
         /// <param name="services">服务集合对象</param>
-        /// <param name="schedulerJobOptionsBuilder">调度作业配置选项构建器</param>
+        /// <param name="sundialOptionsBuilder">调度作业配置选项构建器</param>
         /// <returns>服务集合实例</returns>
-        public static IServiceCollection AddSchedulerJob(this IServiceCollection services, SchedulerJobOptionsBuilder schedulerJobOptionsBuilder = default)
+        public static IServiceCollection AddSundial(this IServiceCollection services, SundialOptionsBuilder sundialOptionsBuilder = default)
         {
             // 初始化调度作业配置项
-            schedulerJobOptionsBuilder ??= new SchedulerJobOptionsBuilder();
+            sundialOptionsBuilder ??= new SundialOptionsBuilder();
 
             // 注册内部服务
             services.AddInternalService();
 
             // 构建调度作业服务
-            schedulerJobOptionsBuilder.Build(services);
+            sundialOptionsBuilder.Build(services);
 
             return services;
         }
@@ -66,7 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // 注册作业调度器
-            services.AddSingleton<ISchedulerJob, SchedulerJob>();
+            services.AddSingleton<IScheduler, Scheduler>();
 
             return services;
         }

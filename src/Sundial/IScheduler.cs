@@ -14,7 +14,7 @@ namespace Sundial
     /// <summary>
     /// 调度作业依赖接口
     /// </summary>
-    public interface ISchedulerJob
+    public interface IScheduler
     {
         /// <summary>
         /// 开始作业

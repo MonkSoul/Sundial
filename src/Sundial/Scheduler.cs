@@ -15,7 +15,7 @@ namespace Sundial
     /// <summary>
     /// 调度作业默认实现
     /// </summary>
-    internal sealed class SchedulerJob : ISchedulerJob
+    internal sealed class Scheduler : IScheduler
     {
         /// <summary>
         /// 作业存储器
@@ -26,7 +26,7 @@ namespace Sundial
         /// 构造函数
         /// </summary>
         /// <param name="jobStorer">作业存储器</param>
-        public SchedulerJob(IJobStorer jobStorer)
+        public Scheduler(IJobStorer jobStorer)
         {
             _jobStorer = jobStorer;
         }

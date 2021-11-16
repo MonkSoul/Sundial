@@ -14,7 +14,7 @@ namespace Sundial.Samples
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSchedulerJob(builder =>
+                    services.AddSundial(builder =>
                     {
                         builder.AddJob<SimpleJob>();
                         builder.AddJob<CronJob>();

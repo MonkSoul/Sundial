@@ -21,7 +21,7 @@ namespace Sundial
     /// <summary>
     /// 调度作业配置选项构建器
     /// </summary>
-    public sealed class SchedulerJobOptionsBuilder
+    public sealed class SundialOptionsBuilder
     {
         /// <summary>
         /// 作业类型集合
@@ -53,8 +53,8 @@ namespace Sundial
         /// </summary>
         /// <typeparam name="TJob"><see cref="IJob"/> 实例</typeparam>
         /// <param name="jobTrigger">作业触发器</param>
-        /// <returns><see cref="SchedulerJobOptionsBuilder"/> 实例</returns>
-        public SchedulerJobOptionsBuilder AddJob<TJob>(IJobTrigger jobTrigger = default)
+        /// <returns><see cref="SundialOptionsBuilder"/> 实例</returns>
+        public SundialOptionsBuilder AddJob<TJob>(IJobTrigger jobTrigger = default)
             where TJob : class, IJob
         {
             return AddJob(typeof(TJob), jobTrigger);
@@ -65,8 +65,8 @@ namespace Sundial
         /// </summary>
         /// <param name="jobType">作业类型，必须实现 <see cref="IJob"/> 接口</param>
         /// <param name="jobTrigger">作业触发器</param>
-        /// <returns><see cref="SchedulerJobOptionsBuilder"/> 实例</returns>
-        public SchedulerJobOptionsBuilder AddJob(Type jobType, IJobTrigger jobTrigger = default)
+        /// <returns><see cref="SundialOptionsBuilder"/> 实例</returns>
+        public SundialOptionsBuilder AddJob(Type jobType, IJobTrigger jobTrigger = default)
         {
             // jobType 须实现 IJob 接口
             if (!typeof(IJob).IsAssignableFrom(jobType))
@@ -137,8 +137,8 @@ namespace Sundial
         /// 替换作业存储器
         /// </summary>
         /// <param name="implementationFactory">自定义作业存储器工厂</param>
-        /// <returns><see cref="SchedulerJobOptionsBuilder"/> 实例</returns>
-        public SchedulerJobOptionsBuilder ReplaceStorer(Func<IServiceProvider, IJobStorer> implementationFactory)
+        /// <returns><see cref="SundialOptionsBuilder"/> 实例</returns>
+        public SundialOptionsBuilder ReplaceStorer(Func<IServiceProvider, IJobStorer> implementationFactory)
         {
             _jobStorerImplementationFactory = implementationFactory;
             return this;
@@ -148,8 +148,8 @@ namespace Sundial
         /// 注册作业监视器
         /// </summary>
         /// <typeparam name="TJobMonitor">实现自 <see cref="IJobMonitor"/></typeparam>
-        /// <returns><see cref="SchedulerJobOptionsBuilder"/> 实例</returns>
-        public SchedulerJobOptionsBuilder AddMonitor<TJobMonitor>()
+        /// <returns><see cref="SundialOptionsBuilder"/> 实例</returns>
+        public SundialOptionsBuilder AddMonitor<TJobMonitor>()
             where TJobMonitor : class, IJobMonitor
         {
             _jobMonitor = typeof(TJobMonitor);
@@ -160,8 +160,8 @@ namespace Sundial
         /// 注册作业执行器
         /// </summary>
         /// <typeparam name="TJobExecutor">实现自 <see cref="IJobExecutor"/></typeparam>
-        /// <returns><see cref="SchedulerJobOptionsBuilder"/> 实例</returns>
-        public SchedulerJobOptionsBuilder AddExecutor<TJobExecutor>()
+        /// <returns><see cref="SundialOptionsBuilder"/> 实例</returns>
+        public SundialOptionsBuilder AddExecutor<TJobExecutor>()
             where TJobExecutor : class, IJobExecutor
         {
             _jobExecutor = typeof(TJobExecutor);
