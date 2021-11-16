@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Sundial.Samples
 {
@@ -18,6 +19,10 @@ namespace Sundial.Samples
                     {
                         builder.AddJob<SimpleJob>();
                         builder.AddJob<CronJob>();
+                        builder.AddJob<YourJob>(new YourTrigger(TimeSpan.FromSeconds(1))
+                        {
+                            NextRunTime = DateTime.UtcNow
+                        });
                     });
                 });
     }

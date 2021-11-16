@@ -19,16 +19,16 @@ namespace Sundial
         /// <summary>
         /// 最近运行时间
         /// </summary>
-        DateTime LastRunTime { get; internal set; }
+        DateTime LastRunTime { get; }
 
         /// <summary>
         /// 下一次运行时间
         /// </summary>
-        DateTime NextRunTime { get; internal set; }
+        DateTime NextRunTime { get; }
 
         /// <summary>
         /// 运行次数
         /// </summary>
-        long NumberOfRuns { get; internal set; }
+        long NumberOfRuns { get; }
     }
 }

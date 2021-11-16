@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Description>.NET 功能齐全的开源作业调度系统，可从最小的应用程序到大型企业系统使用。</Description>
 	</PropertyGroup>
 
