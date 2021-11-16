@@ -1,13 +1,12 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sundial;
 using System.Linq;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace SundialUnitTests
+namespace Sundial.UnitTests
 {
     public class SundialUnitTest
     {
@@ -50,6 +49,32 @@ namespace SundialUnitTests
             builderType.Invoking(t => t.GetField("_jobStorerImplementationFactory", bindingAttr).GetValue(sundialOptionsBuilder).Should().BeNull()).Should().NotThrow();
             builderType.Invoking(t => t.GetField("_jobMonitor", bindingAttr).GetValue(sundialOptionsBuilder).Should().BeNull()).Should().NotThrow();
             builderType.Invoking(t => t.GetField("_jobExecutor", bindingAttr).GetValue(sundialOptionsBuilder).Should().BeNull()).Should().NotThrow();
+        }
+
+        [Fact]
+        public void TestJobRegister()
+        {
+            var builder = Host.CreateDefaultBuilder();
+            builder.ConfigureServices(services =>
+            {
+                services.AddSundial(builder =>
+                {
+                    builder.AddJob<SimpleJob>();
+                    builder.AddJob<CronJob>();
+                });
+
+                services.Any(s => typeof(IJob).IsAssignableFrom(s.ServiceType) && s.Lifetime == ServiceLifetime.Singleton).Should().BeTrue();
+                services.Count(s => typeof(IJob).IsAssignableFrom(s.ServiceType) && s.Lifetime == ServiceLifetime.Singleton).Should().Be(2);
+            });
+
+            var app = builder.Build();
+            var services = app.Services;
+
+            var simpleJob = services.GetService<SimpleJob>();
+            simpleJob.Should().NotBeNull();
+
+            var cronJob = services.GetService<CronJob>();
+            cronJob.Should().NotBeNull();
         }
     }
 }

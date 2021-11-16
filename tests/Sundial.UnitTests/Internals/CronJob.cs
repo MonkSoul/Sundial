@@ -3,13 +3,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sundial.Samples
+namespace Sundial.UnitTests
 {
-    [Job("your_job")]
-    public class YourJob : IJob
+    [CronJob("cron_job", "* * * * *")]
+    public class CronJob : IJob
     {
-        private readonly ILogger<SimpleJob> _logger;
-        public YourJob(ILogger<SimpleJob> logger)
+        private readonly ILogger<CronJob> _logger;
+        public CronJob(ILogger<CronJob> logger)
         {
             _logger = logger;
         }

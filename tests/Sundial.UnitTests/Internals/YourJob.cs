@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sundial.Samples
+namespace Sundial.UnitTests
 {
     [Job("your_job")]
     public class YourJob : IJob
