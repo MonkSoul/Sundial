@@ -109,6 +109,33 @@ info: Sundial.Samples.CronJob[0]
 info: Sundial.Samples.SimpleJob[0]
 ```
 
+4. 结合 API 调度作业
+
+```cs
+public class ApiController: ControllerBase
+{
+    private readonly ISchedulerJob _schedulerJob;
+    public ApiController(ISchedulerJob schedulerJob)
+    {
+        _schedulerJob = schedulerJob;
+    }
+
+    // 暂停
+    public async Task PauseAsync(string jobName)
+    {
+        await _schedulerJob.PauseAsync(jobName);
+    }
+
+    // 开始
+    public async Task StartAsync(string jobName)
+    {
+        await _schedulerJob.StartAsync(jobName);
+    }
+
+    // ......
+}
+```
+
 [更多文档](./docs)
 
 ## 文档
