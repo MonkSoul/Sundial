@@ -90,7 +90,7 @@ public class CronJob : IJob
 services.AddSundial(builder =>
 {
     builder.AddJob<SimpleJob>();
-    builder.CronJob<SimpleJob>();
+    builder.AddJob<CronJob>();
 });
 ```
 
