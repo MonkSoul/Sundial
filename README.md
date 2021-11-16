@@ -4,6 +4,8 @@
 
 .NET 功能齐全的开源作业调度系统，可从最小的应用程序到大型企业系统使用。
 
+![Sundial.drawio](https://gitee.com/dotnetchina/Sundial/raw/master/drawio/Sundial.drawio.png "Sundial.drawio.png")
+
 ## 特性
 
 - 简化调度作业
