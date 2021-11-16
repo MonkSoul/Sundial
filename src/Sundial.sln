@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sundial", "Sundial\Sundial.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sundial.Samples", "..\samples\Sundial.Samples\Sundial.Samples.csproj", "{C8797E7C-257C-4270-B60D-3E113AC4F205}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SundialUnitTests", "..\tests\SundialUnitTests\SundialUnitTests.csproj", "{97D00BCA-B615-4A8A-8743-8F9493C0AF07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C8797E7C-257C-4270-B60D-3E113AC4F205}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8797E7C-257C-4270-B60D-3E113AC4F205}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8797E7C-257C-4270-B60D-3E113AC4F205}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D00BCA-B615-4A8A-8743-8F9493C0AF07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97D00BCA-B615-4A8A-8743-8F9493C0AF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97D00BCA-B615-4A8A-8743-8F9493C0AF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97D00BCA-B615-4A8A-8743-8F9493C0AF07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
