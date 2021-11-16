@@ -42,7 +42,7 @@ dotnet add package Sundial
 
 1. 定义作业，并实现 `IJob` 接口：
 
-周期作业：
+**周期作业**：固定时间执行作业，如 `1秒`。
 
 ```cs
 [SimpleJob("simple_job", 1000)]
@@ -63,7 +63,7 @@ public class SimpleJob : IJob
 }
 ```
 
-Cron 作业：
+**Cron 作业**：支持完整 `Cron 表达式` 精确控制。
 
 ```cs
 [CronJob("cron_job", "* * * * *")]
