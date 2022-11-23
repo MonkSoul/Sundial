@@ -23,30 +23,21 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业集群服务上下文
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+public sealed class JobClusterContext
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
+    /// <param name="clusterId">作业集群 Id</param>
+    internal JobClusterContext(string clusterId)
     {
+        ClusterId = clusterId;
     }
 
     /// <summary>
-    /// 执行后时间
+    /// 作业集群 Id
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
-
-    /// <summary>
-    /// 异常信息
-    /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    public string ClusterId { get; }
 }

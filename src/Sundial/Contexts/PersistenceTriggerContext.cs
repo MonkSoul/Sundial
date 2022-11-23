@@ -23,31 +23,24 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行上下文基类
+/// 作业触发器持久化上下文
 /// </summary>
-public abstract class JobExecutionContext
+public sealed class PersistenceTriggerContext : PersistenceContext
 {
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="jobDetail">作业信息</param>
     /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutionContext(JobDetail jobDetail
+    /// <param name="behavior">作业持久化行为</param>
+    internal PersistenceTriggerContext(JobDetail jobDetail
         , Trigger trigger
-        , DateTime checkTime)
+        , PersistenceBehavior behavior)
+        : base(jobDetail, behavior)
     {
-        JobId = jobDetail.JobId;
         TriggerId = trigger.TriggerId;
-        JobDetail = jobDetail;
         Trigger = trigger;
-        OccurrenceTime = checkTime;
     }
-
-    /// <summary>
-    /// 作业 Id
-    /// </summary>
-    public string JobId { get; }
 
     /// <summary>
     /// 作业触发器 Id
@@ -55,26 +48,37 @@ public abstract class JobExecutionContext
     public string TriggerId { get; }
 
     /// <summary>
-    /// 作业信息
-    /// </summary>
-    public JobDetail JobDetail { get; }
-
-    /// <summary>
     /// 作业触发器
     /// </summary>
     public Trigger Trigger { get; }
 
     /// <summary>
-    /// 作业计划触发时间
+    /// 转换成 Sql 语句
     /// </summary>
-    public DateTime OccurrenceTime { get; }
+    /// <param name="tableName">数据库表名</param>
+    /// <param name="naming">命名法</param>
+    /// <returns><see cref="string"/></returns>
+    public new string ConvertToSQL(string tableName, NamingConventions naming = NamingConventions.CamelCase)
+    {
+        return Trigger.ConvertToSQL(tableName, Behavior, naming);
+    }
 
     /// <summary>
-    /// 转换成 JSON 字符串
+    /// 转换成 JSON 语句
     /// </summary>
     /// <param name="naming">命名法</param>
     /// <returns><see cref="string"/></returns>
-    public string ConvertToJSON(NamingConventions naming = NamingConventions.CamelCase)
+    public new string ConvertToJSON(NamingConventions naming = NamingConventions.CamelCase)
+    {
+        return Trigger.ConvertToJSON(naming);
+    }
+
+    /// <summary>
+    /// 转换作业计划成 JSON 语句
+    /// </summary>
+    /// <param name="naming">命名法</param>
+    /// <returns><see cref="string"/></returns>
+    public string ConvertAllToJSON(NamingConventions naming = NamingConventions.CamelCase)
     {
         return Penetrates.Write(writer =>
         {
@@ -90,5 +94,24 @@ public abstract class JobExecutionContext
 
             writer.WriteEndObject();
         });
+    }
+
+    /// <summary>
+    /// 转换成 Monitor 字符串
+    /// </summary>
+    /// <param name="naming">命名法</param>
+    /// <returns><see cref="string"/></returns>
+    public new string ConvertToMonitor(NamingConventions naming = NamingConventions.CamelCase)
+    {
+        return Trigger.ConvertToMonitor(naming);
+    }
+
+    /// <summary>
+    /// 作业触发器持久化上下文转字符串输出
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return $"{JobDetail} {Trigger} <{Behavior}>";
     }
 }

@@ -23,30 +23,32 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业调度器操作结果
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+public enum ScheduleResult
 {
     /// <summary>
-    /// 构造函数
+    /// 不存在
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
+    NotFound = 0,
 
     /// <summary>
-    /// 执行后时间
+    /// 已存在
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
+    Exists = 1,
 
     /// <summary>
-    /// 异常信息
+    /// 成功
     /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    Succeed = 2,
+
+    /// <summary>
+    /// 删除成功
+    /// </summary>
+    Removed = 3,
+
+    /// <summary>
+    /// 失败
+    /// </summary>
+    Failed = 4
 }

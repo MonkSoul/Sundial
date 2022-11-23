@@ -23,30 +23,22 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业持久化行为
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+public enum PersistenceBehavior : uint
 {
     /// <summary>
-    /// 构造函数
+    /// 添加
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
+    Appended = 0,
 
     /// <summary>
-    /// 执行后时间
+    /// 更新
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
+    Updated = 1,
 
     /// <summary>
-    /// 异常信息
+    /// 删除
     /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    Removed = 2,
 }

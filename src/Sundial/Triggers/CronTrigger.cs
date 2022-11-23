@@ -1,70 +1,65 @@
-﻿// Copyright (c) 2020-2021 百小僧, Baiqian Co.,Ltd.
-// Sundial is licensed under Mulan PSL v2.
-// You can use this software according to the terms and conditions of the Mulan PSL v2.
-// You may obtain a copy of Mulan PSL v2 at:
-//             https://gitee.com/dotnetchina/Sundial/blob/master/LICENSE
-// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-// See the Mulan PSL v2 for more details.
+﻿// MIT License
+//
+// Copyright (c) 2020-2022 百小僧, Baiqian Co.,Ltd and Contributors
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-using System;
 using TimeCrontab;
 
-namespace Sundial
+namespace Sundial;
+
+/// <summary>
+/// Cron 表达式作业触发器
+/// </summary>
+public class CronTrigger : Trigger
 {
     /// <summary>
-    /// Cron 表达式触发器
+    /// 构造函数
     /// </summary>
-    internal sealed class CronTrigger : JobTriggerBase, IJobTrigger
+    /// <param name="schedule">Cron 表达式</param>
+    /// <param name="format">Cron 表达式格式化类型</param>
+    public CronTrigger(string schedule, int format)
     {
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="scheduleCrontab">调度计划 <see cref="Crontab"/> 对象</param>
-        internal CronTrigger(Crontab scheduleCrontab)
-        {
-            ScheduleCrontab = scheduleCrontab;
-        }
+        Crontab = Crontab.Parse(schedule, (CronStringFormat)format);
+    }
 
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="rates">速率</param>
-        /// <param name="scheduleCrontab">调度计划 <see cref="Crontab"/> 对象</param>
-        internal CronTrigger(TimeSpan rates, Crontab scheduleCrontab)
-            : this(scheduleCrontab)
-        {
-            Rates = rates;
-        }
+    /// <summary>
+    /// <see cref="Crontab"/> 对象
+    /// </summary>
+    private Crontab Crontab { get; }
 
-        /// <summary>
-        /// 调度计划 <see cref="Crontab"/> 对象
-        /// </summary>
-        private Crontab ScheduleCrontab { get; }
+    /// <summary>
+    /// 计算下一个触发时间
+    /// </summary>
+    /// <param name="startAt">起始时间</param>
+    /// <returns><see cref="DateTime"/></returns>
+    public override DateTime GetNextOccurrence(DateTime startAt)
+    {
+        return Crontab.GetNextOccurrence(startAt);
+    }
 
-        /// <summary>
-        /// 速率
-        /// </summary>
-        public TimeSpan Rates { get; } = TimeSpan.FromMinutes(1);
-
-        /// <summary>
-        /// 增量
-        /// </summary>
-        public void Increment()
-        {
-            NumberOfRuns++;
-            LastRunTime = NextRunTime;
-            NextRunTime = ScheduleCrontab.GetNextOccurrence(NextRunTime);
-        }
-
-        /// <summary>
-        /// 是否符合执行逻辑
-        /// </summary>
-        /// <param name="identity">作业唯一标识</param>
-        /// <param name="currentTime">当前时间</param>
-        /// <returns><see cref="bool"/> 实例</returns>
-        public bool ShouldRun(string identity, DateTime currentTime)
-        {
-            return NextRunTime < currentTime && LastRunTime != NextRunTime;
-        }
+    /// <summary>
+    /// 作业触发器转字符串输出
+    /// </summary>
+    /// <returns><see cref="string"/></returns>
+    public override string ToString()
+    {
+        return $"<{JobId} {TriggerId}> {Description} {Crontab}";
     }
 }

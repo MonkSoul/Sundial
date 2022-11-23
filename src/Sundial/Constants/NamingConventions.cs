@@ -23,30 +23,26 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 命名转换器
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+/// <remarks>用于生成持久化 SQL 语句</remarks>
+public enum NamingConventions
 {
     /// <summary>
-    /// 构造函数
+    /// 驼峰命名法
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
+    /// <remarks>第一个单词首字母小写</remarks>
+    CamelCase = 0,
 
     /// <summary>
-    /// 执行后时间
+    /// 帕斯卡命名法
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
+    /// <remarks>每一个单词首字母大写</remarks>
+    Pascal = 1,
 
     /// <summary>
-    /// 异常信息
+    /// 下划线命名法
     /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    /// <remarks>每次单词使用下划线连接且首字母都是小写</remarks>
+    UnderScoreCase = 2
 }

@@ -23,30 +23,15 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业处理程序
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+public interface IJob
 {
     /// <summary>
-    /// 构造函数
+    /// 具体处理逻辑
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
-
-    /// <summary>
-    /// 执行后时间
-    /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
-
-    /// <summary>
-    /// 异常信息
-    /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    /// <param name="context">作业执行前上下文</param>
+    /// <param name="stoppingToken">取消任务 Token</param>
+    /// <returns><see cref="Task"/></returns>
+    Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken);
 }

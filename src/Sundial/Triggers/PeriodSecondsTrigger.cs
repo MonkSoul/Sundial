@@ -23,30 +23,16 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 秒周期（间隔）作业触发器
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+public sealed class PeriodSecondsTrigger : PeriodTrigger
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
+    /// <param name="interval">间隔（秒）</param>
+    public PeriodSecondsTrigger(int interval)
+        : base(interval * 1000)
     {
     }
-
-    /// <summary>
-    /// 执行后时间
-    /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
-
-    /// <summary>
-    /// 异常信息
-    /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
 }

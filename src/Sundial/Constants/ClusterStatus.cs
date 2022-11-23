@@ -23,30 +23,22 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业集群状态
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+public enum ClusterStatus : uint
 {
     /// <summary>
-    /// 构造函数
+    /// 宕机
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
+    Crashed = 0,
 
     /// <summary>
-    /// 执行后时间
+    /// 工作中
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
+    Working = 1,
 
     /// <summary>
-    /// 异常信息
+    /// 等待被唤醒
     /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    Waiting = 2
 }

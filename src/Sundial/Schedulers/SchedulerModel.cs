@@ -20,33 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Text.Json.Serialization;
+
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业计划模型
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+/// <remarks>常用于接口返回或序列化操作</remarks>
+public sealed class SchedulerModel
 {
     /// <summary>
-    /// 构造函数
+    /// 作业信息
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
+    [JsonInclude]
+    public JobDetail JobDetail { get; internal set; }
 
     /// <summary>
-    /// 执行后时间
+    /// 作业触发器
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
-
-    /// <summary>
-    /// 异常信息
-    /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    [JsonInclude]
+    public Trigger[] Triggers { get; internal set; }
 }

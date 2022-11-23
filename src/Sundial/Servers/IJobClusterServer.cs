@@ -23,30 +23,33 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业集群服务
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+/// <remarks>集群并不能达到负载均衡的效果，而仅仅提供了故障转移的功能，当一个任务服务器宕机时，另一个任务服务器会启动</remarks>
+public interface IJobClusterServer
 {
     /// <summary>
-    /// 构造函数
+    /// 当前作业调度器启动通知
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
+    /// <param name="context">作业集群服务上下文</param>
+    void Start(JobClusterContext context);
 
     /// <summary>
-    /// 执行后时间
+    /// 等待被唤醒
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
+    /// <param name="context">作业集群服务上下文</param>
+    /// <returns><see cref="Task"/></returns>
+    Task WaitingForAsync(JobClusterContext context);
 
     /// <summary>
-    /// 异常信息
+    /// 当前作业调度器停止通知
     /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    /// <param name="context">作业集群服务上下文</param>
+    void Stop(JobClusterContext context);
+
+    /// <summary>
+    /// 当前作业调度器宕机
+    /// </summary>
+    /// <param name="context">作业集群服务上下文</param>
+    void Crash(JobClusterContext context);
 }

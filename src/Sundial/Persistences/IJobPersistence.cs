@@ -23,30 +23,27 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 作业调度持久化器
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+public interface IJobPersistence
 {
     /// <summary>
-    /// 构造函数
+    /// 加载持久化数据
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
+    /// <param name="jobId">作业 Id</param>
+    /// <param name="builder">作业计划构建器</param>
+    /// <returns><see cref="SchedulerBuilder"/></returns>
+    SchedulerBuilder Preload(string jobId, SchedulerBuilder builder);
 
     /// <summary>
-    /// 执行后时间
+    /// 作业信息更改通知
     /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
+    /// <param name="context">作业信息持久化上下文</param>
+    void OnChanged(PersistenceContext context);
 
     /// <summary>
-    /// 异常信息
+    /// 作业触发器更改通知
     /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
+    /// <param name="context">作业触发器持久化上下文</param>
+    void OnTriggerChanged(PersistenceTriggerContext context);
 }

@@ -20,33 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using TimeCrontab;
+
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// Cron 表达式作业触发器特性
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public class CronAttribute : TriggerAttribute
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
+    /// <param name="schedule">Cron 表达式</param>
+    /// <param name="format">Cron 表达式格式化类型</param>
+    public CronAttribute(string schedule, CronStringFormat format = CronStringFormat.Default)
+        : base(typeof(CronTrigger)
+            , schedule, (int)format)
     {
     }
-
-    /// <summary>
-    /// 执行后时间
-    /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
-
-    /// <summary>
-    /// 异常信息
-    /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
 }

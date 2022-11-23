@@ -20,85 +20,84 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Text.Json.Serialization;
-
 namespace Sundial;
 
 /// <summary>
-/// 作业信息
+/// 作业触发器状态
 /// </summary>
-public partial class JobDetail
+public enum TriggerStatus : uint
 {
     /// <summary>
-    /// 作业 Id
+    /// 积压
     /// </summary>
-    [JsonInclude]
-    public string JobId { get; internal set; }
+    /// <remarks>起始时间大于当前时间</remarks>
+    Backlog = 0,
 
     /// <summary>
-    /// 作业组名称
+    /// 就绪
     /// </summary>
-    [JsonInclude]
-    public string GroupName { get; internal set; }
+    Ready = 1,
 
     /// <summary>
-    /// 作业处理程序类型
+    /// 正在运行
     /// </summary>
-    /// <remarks>存储的是类型的 FullName</remarks>
-    [JsonInclude]
-    public string JobType { get; internal set; }
+    Running = 2,
 
     /// <summary>
-    /// 作业处理程序类型所在程序集
+    /// 暂停
     /// </summary>
-    /// <remarks>存储的是程序集 Name</remarks>
-    [JsonInclude]
-    public string AssemblyName { get; internal set; }
+    Pause = 3,
 
     /// <summary>
-    /// 描述信息
+    /// 阻塞
     /// </summary>
-    [JsonInclude]
-    public string Description { get; internal set; }
+    /// <remarks>本该执行但是没有执行</remarks>
+    Blocked = 4,
 
     /// <summary>
-    /// 是否采用并发执行
+    /// 由失败进入就绪
     /// </summary>
-    /// <remarks>如果设置为 false，那么使用串行执行</remarks>
-    [JsonInclude]
-    public bool Concurrent { get; internal set; } = true;
+    /// <remarks>运行错误当并未超出最大错误数，进入下一轮就绪</remarks>
+    ErrorToReady = 5,
 
     /// <summary>
-    /// 是否扫描 IJob 实现类 [Trigger] 特性触发器
+    /// 归档
     /// </summary>
-    [JsonInclude]
-    public bool IncludeAnnotations { get; internal set; } = false;
+    /// <remarks>结束时间小于当前时间</remarks>
+    Archived = 6,
 
     /// <summary>
-    /// 作业信息额外数据
+    /// 崩溃
     /// </summary>
-    [JsonInclude]
-    public string Properties { get; internal set; } = "{}";
+    /// <remarks>错误次数超出了最大错误数</remarks>
+    Panic = 7,
 
     /// <summary>
-    /// 作业更新时间
+    /// 超限
     /// </summary>
-    [JsonInclude]
-    public DateTime? UpdatedTime { get; internal set; }
+    /// <remarks>运行次数超出了最大限制</remarks>
+    Overrun = 8,
 
     /// <summary>
-    /// 标记其他作业正在执行
+    /// 无触发时间
     /// </summary>
-    /// <remarks>当 <see cref="Concurrent"/> 为 false 时有效，也就是串行执行</remarks>
-    internal bool Blocked { get; set; } = false;
+    /// <remarks>下一次执行时间为 null </remarks>
+    Unoccupied = 9,
 
     /// <summary>
-    /// 作业处理程序运行时类型
+    /// 未启动
     /// </summary>
-    internal Type RuntimeJobType { get; set; }
+    NotStart = 10,
 
     /// <summary>
-    /// 作业信息额外数据运行时实例
+    /// 未知作业触发器
     /// </summary>
-    internal Dictionary<string, object> RuntimeProperties { get; set; } = new();
+    /// <remarks>作业触发器运行时类型为 null</remarks>
+    Unknown = 11,
+
+    /// <summary>
+    /// 未知作业处理程序
+    /// </summary>
+    /// <remarks>作业处理程序类型运行时类型为 null</remarks>
+    Unhandled = 12
 }

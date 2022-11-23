@@ -23,30 +23,16 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行后上下文
+/// 每天（午夜）开始作业触发器特性
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class DailyAttribute : CronAttribute
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
+    public DailyAttribute()
+        : base("@daily")
     {
     }
-
-    /// <summary>
-    /// 执行后时间
-    /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
-
-    /// <summary>
-    /// 异常信息
-    /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
 }

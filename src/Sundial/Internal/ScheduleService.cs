@@ -20,33 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Sundial;
+namespace System.Logging;
 
 /// <summary>
-/// 作业执行后上下文
+/// ScheduleService 日志拓展默认分类名
 /// </summary>
-public sealed class JobExecutedContext : JobExecutionContext
+internal sealed class ScheduleService
 {
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutedContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
-        : base(jobDetail, trigger, checkTime)
-    {
-    }
-
-    /// <summary>
-    /// 执行后时间
-    /// </summary>
-    public DateTime ExecutedTime { get; internal set; }
-
-    /// <summary>
-    /// 异常信息
-    /// </summary>
-    public InvalidOperationException Exception { get; internal set; }
 }

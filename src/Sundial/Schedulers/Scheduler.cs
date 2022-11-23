@@ -23,72 +23,60 @@
 namespace Sundial;
 
 /// <summary>
-/// 作业执行上下文基类
+/// 作业计划
 /// </summary>
-public abstract class JobExecutionContext
+internal sealed partial class Scheduler : IScheduler
 {
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="jobDetail">作业信息</param>
-    /// <param name="trigger">作业触发器</param>
-    /// <param name="checkTime">作业调度服务检查时间</param>
-    internal JobExecutionContext(JobDetail jobDetail
-        , Trigger trigger
-        , DateTime checkTime)
+    /// <param name="triggers">作业触发器集合</param>
+    internal Scheduler(JobDetail jobDetail, Dictionary<string, Trigger> triggers)
     {
         JobId = jobDetail.JobId;
-        TriggerId = trigger.TriggerId;
+        GroupName = jobDetail.GroupName;
         JobDetail = jobDetail;
-        Trigger = trigger;
-        OccurrenceTime = checkTime;
+        Triggers = triggers;
     }
 
     /// <summary>
     /// 作业 Id
     /// </summary>
-    public string JobId { get; }
+    internal string JobId { get; private set; }
 
     /// <summary>
-    /// 作业触发器 Id
+    /// 作业组名称
     /// </summary>
-    public string TriggerId { get; }
+    internal string GroupName { get; private set; }
 
     /// <summary>
     /// 作业信息
     /// </summary>
-    public JobDetail JobDetail { get; }
+    internal JobDetail JobDetail { get; private set; }
 
     /// <summary>
-    /// 作业触发器
+    /// 作业触发器集合
     /// </summary>
-    public Trigger Trigger { get; }
+    internal Dictionary<string, Trigger> Triggers { get; private set; } = new();
 
     /// <summary>
-    /// 作业计划触发时间
+    /// 作业处理程序实例
     /// </summary>
-    public DateTime OccurrenceTime { get; }
+    internal IJob JobHandler { get; set; }
 
     /// <summary>
-    /// 转换成 JSON 字符串
+    /// 作业计划工厂
     /// </summary>
-    /// <param name="naming">命名法</param>
-    /// <returns><see cref="string"/></returns>
-    public string ConvertToJSON(NamingConventions naming = NamingConventions.CamelCase)
-    {
-        return Penetrates.Write(writer =>
-        {
-            writer.WriteStartObject();
+    internal ISchedulerFactory Factory { get; set; }
 
-            // 输出 JobDetail
-            writer.WritePropertyName(Penetrates.GetNaming(nameof(JobDetail), naming));
-            writer.WriteRawValue(JobDetail.ConvertToJSON(naming));
+    /// <summary>
+    /// 作业调度器日志服务
+    /// </summary>
+    internal IScheduleLogger Logger { get; set; }
 
-            // 输出 Trigger
-            writer.WritePropertyName(Penetrates.GetNaming(nameof(Trigger), naming));
-            writer.WriteRawValue(Trigger.ConvertToJSON(naming));
-
-            writer.WriteEndObject();
-        });
-    }
+    /// <summary>
+    /// 是否使用 UTC 时间
+    /// </summary>
+    internal bool UseUtcTimestamp { get; set; }
 }

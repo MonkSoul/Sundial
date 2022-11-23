@@ -1,29 +1,15 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
+using Sundial;
+using Sundial.Samples;
 
-namespace Sundial.Samples
-{
-    public class Program
+IHost host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices(services =>
     {
-        public static void Main(string[] args)
+        services.AddSchedule(options =>
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            options.AddJob<MyJob>(Triggers.PeriodSeconds(5)
+                , Triggers.Minutely());
+        });
+    })
+    .Build();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddSundial(builder =>
-                    {
-                        builder.AddJob<SimpleJob>();
-                        builder.AddJob<CronJob>();
-                        builder.AddJob<YourJob>(new YourTrigger(TimeSpan.FromSeconds(1))
-                        {
-                            NextRunTime = DateTime.UtcNow
-                        });
-                    });
-                });
-    }
-}
+await host.RunAsync();
