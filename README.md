@@ -62,7 +62,7 @@ public class MyJob : IJob
 }
 ```
 
-2. 在 `Startup.cs` 注册 `AddSundial` 服务和作业：
+2. 在 `Startup.cs` 注册 `AddSchedule` 服务和作业：
 
 ```cs
 services.AddSchedule(options =>
