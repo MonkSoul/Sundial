@@ -118,6 +118,18 @@ public sealed class ScheduleOptionsBuilder
     /// <summary>
     /// 添加作业
     /// </summary>
+    /// <param name="jobType"><see cref="IJob"/> 实现类型</param>
+    /// <param name="triggerBuilders">作业触发器构建器集合</param>
+    /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
+    public ScheduleOptionsBuilder AddJob(Type jobType, params TriggerBuilder[] triggerBuilders)
+    {
+        return AddJob(SchedulerBuilder.Create(JobBuilder.Create(jobType)
+            , triggerBuilders));
+    }
+
+    /// <summary>
+    /// 添加作业
+    /// </summary>
     /// <typeparam name="TJob"><see cref="IJob"/> 实现类型</typeparam>
     /// <param name="jobId">作业 Id</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
@@ -126,6 +138,19 @@ public sealed class ScheduleOptionsBuilder
          where TJob : class, IJob
     {
         return AddJob(SchedulerBuilder.Create(JobBuilder.Create<TJob>().SetJobId(jobId)
+            , triggerBuilders));
+    }
+
+    /// <summary>
+    /// 添加作业
+    /// </summary>
+    /// <param name="jobType"><see cref="IJob"/> 实现类型</param>
+    /// <param name="jobId">作业 Id</param>
+    /// <param name="triggerBuilders">作业触发器构建器集合</param>
+    /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
+    public ScheduleOptionsBuilder AddJob(Type jobType, string jobId, params TriggerBuilder[] triggerBuilders)
+    {
+        return AddJob(SchedulerBuilder.Create(JobBuilder.Create(jobType).SetJobId(jobId)
             , triggerBuilders));
     }
 
@@ -147,6 +172,20 @@ public sealed class ScheduleOptionsBuilder
     /// <summary>
     /// 添加作业
     /// </summary>
+    /// <param name="jobType"><see cref="IJob"/> 实现类型</param>
+    /// <param name="jobId">作业 Id</param>
+    /// <param name="concurrent">是否采用并发执行</param>
+    /// <param name="triggerBuilders">作业触发器构建器集合</param>
+    /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
+    public ScheduleOptionsBuilder AddJob(Type jobType, string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders)
+    {
+        return AddJob(SchedulerBuilder.Create(JobBuilder.Create(jobType).SetJobId(jobId).SetConcurrent(concurrent)
+            , triggerBuilders));
+    }
+
+    /// <summary>
+    /// 添加作业
+    /// </summary>
     /// <typeparam name="TJob"><see cref="IJob"/> 实现类型</typeparam>
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
@@ -155,6 +194,19 @@ public sealed class ScheduleOptionsBuilder
          where TJob : class, IJob
     {
         return AddJob(SchedulerBuilder.Create(JobBuilder.Create<TJob>().SetConcurrent(concurrent)
+            , triggerBuilders));
+    }
+
+    /// <summary>
+    /// 添加作业
+    /// </summary>
+    /// <param name="jobType"><see cref="IJob"/> 实现类型</param>
+    /// <param name="concurrent">是否采用并发执行</param>
+    /// <param name="triggerBuilders">作业触发器构建器集合</param>
+    /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
+    public ScheduleOptionsBuilder AddJob(Type jobType, bool concurrent, params TriggerBuilder[] triggerBuilders)
+    {
+        return AddJob(SchedulerBuilder.Create(JobBuilder.Create(jobType).SetConcurrent(concurrent)
             , triggerBuilders));
     }
 
