@@ -67,10 +67,34 @@ public partial class Trigger
     }
 
     /// <summary>
-    /// 记录运行信息和计算下一个触发时间
+    /// 重置启动时最大触发次数等于一次的作业触发器
     /// </summary>
     /// <param name="useUtcTimestamp">是否使用 UTC 时间</param>
-    internal void Increment(bool useUtcTimestamp)
+    internal void ResetMaxNumberOfRunsEqualOnceOnStart(bool useUtcTimestamp)
+    {
+        if (StartNow
+            && ResetOnlyOnce
+            && MaxNumberOfRuns == 1
+            && NumberOfRuns == 1)
+        {
+            NumberOfRuns = 0;
+            SetStatus(TriggerStatus.Ready);
+            NextRunTime = CheckRunOnStarAndReturnNextRunTime(useUtcTimestamp);
+
+            if (MaxNumberOfErrors > 0 && NumberOfErrors >= MaxNumberOfErrors)
+            {
+                NumberOfErrors = MaxNumberOfErrors - 1;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 记录运行信息和计算下一个触发时间
+    /// </summary>
+    /// <param name="jobDetail">作业信息</param>
+    /// <param name="startAt">起始时间</param>
+    /// <param name="useUtcTimestamp">是否使用 UTC 时间</param>
+    internal void Increment(JobDetail jobDetail, DateTime startAt, bool useUtcTimestamp)
     {
         // 阻塞状态并没有实际执行，此时忽略次数递增和最近运行时间赋值
         if (Status != TriggerStatus.Blocked)
@@ -79,7 +103,21 @@ public partial class Trigger
             LastRunTime = NextRunTime;
         }
 
-        NextRunTime = GetNextRunTime(useUtcTimestamp);
+        // 检查下一次执行信息
+        if (CheckNextOccurrence(jobDetail, startAt)) NextRunTime = GetNextRunTime(useUtcTimestamp);
+    }
+
+    /// <summary>
+    /// 记录错误信息，包含错误次数和运行状态
+    /// </summary>
+    /// <param name="jobDetail">作业信息</param>
+    /// <param name="startAt">起始时间</param>
+    internal void IncrementErrors(JobDetail jobDetail, DateTime startAt)
+    {
+        NumberOfErrors++;
+
+        // 检查下一次执行信息
+        if (CheckNextOccurrence(jobDetail, startAt)) SetStatus(TriggerStatus.ErrorToReady);
     }
 
     /// <summary>
@@ -117,19 +155,6 @@ public partial class Trigger
     }
 
     /// <summary>
-    /// 记录错误信息，包含错误次数和运行状态
-    /// </summary>
-    internal void IncrementErrors()
-    {
-        NumberOfErrors++;
-
-        // 如果错误次数大于最大错误数，则表示该触发器是奔溃状态
-        if (MaxNumberOfErrors > 0 && NumberOfErrors >= MaxNumberOfErrors) SetStatus(TriggerStatus.Panic);
-        // 否则是就绪（错误状态）
-        else SetStatus(TriggerStatus.ErrorToReady);
-    }
-
-    /// <summary>
     /// 设置作业触发器状态
     /// </summary>
     /// <param name="status"><see cref="TriggerStatus"/></param>
@@ -145,7 +170,7 @@ public partial class Trigger
     /// <returns><see cref="bool"/></returns>
     internal bool IsNormalStatus()
     {
-        return Status != TriggerStatus.Backlog
+        var isNormalStatus = Status != TriggerStatus.Backlog
             && Status != TriggerStatus.Pause
             && Status != TriggerStatus.Archived
             && Status != TriggerStatus.Panic
@@ -154,20 +179,26 @@ public partial class Trigger
             && Status != TriggerStatus.NotStart
             && Status != TriggerStatus.Unknown
             && Status != TriggerStatus.Unhandled;
+
+        // 如果不是正常触发器状态，NextRunTime 强制设置为 null
+        if (!isNormalStatus) NextRunTime = null;
+
+        return isNormalStatus;
     }
 
     /// <summary>
-    /// 执行条件检查（内部检查）
+    /// 检查下一次执行信息
     /// </summary>
     /// <param name="jobDetail">作业信息</param>
     /// <param name="startAt">起始时间</param>
     /// <returns><see cref="bool"/></returns>
-    internal bool InternalShouldRun(JobDetail jobDetail, DateTime startAt)
+    internal bool CheckNextOccurrence(JobDetail jobDetail, DateTime startAt)
     {
         // 检查作业信息运行时类型
         if (jobDetail.RuntimeJobType == null)
         {
             SetStatus(TriggerStatus.Unhandled);
+            NextRunTime = null;
             return false;
         }
 
@@ -175,6 +206,7 @@ public partial class Trigger
         if (RuntimeTriggerType == null)
         {
             SetStatus(TriggerStatus.Unknown);
+            NextRunTime = null;
             return false;
         }
 
@@ -182,12 +214,7 @@ public partial class Trigger
         if (StartNow == false)
         {
             SetStatus(TriggerStatus.NotStart);
-            return false;
-        }
-
-        // 状态检查
-        if (!IsNormalStatus())
-        {
+            NextRunTime = null;
             return false;
         }
 
@@ -205,13 +232,6 @@ public partial class Trigger
             return false;
         }
 
-        // 下一次运行时间空判断
-        if (NextRunTime == null)
-        {
-            SetStatus(TriggerStatus.Unoccupied);
-            return false;
-        }
-
         // 最大次数判断
         if (MaxNumberOfRuns > 0 && NumberOfRuns >= MaxNumberOfRuns)
         {
@@ -226,8 +246,32 @@ public partial class Trigger
             return false;
         }
 
+        // 状态检查
+        if (!IsNormalStatus())
+        {
+            return false;
+        }
+
+        // 下一次运行时间空判断
+        if (NextRunTime == null)
+        {
+            SetStatus(TriggerStatus.Unoccupied);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 执行条件检查（内部检查）
+    /// </summary>
+    /// <param name="jobDetail">作业信息</param>
+    /// <param name="startAt">起始时间</param>
+    /// <returns><see cref="bool"/></returns>
+    internal bool InternalShouldRun(JobDetail jobDetail, DateTime startAt)
+    {
         // 调用派生类 ShouldRun 方法
-        return ShouldRun(jobDetail, startAt);
+        return CheckNextOccurrence(jobDetail, startAt) && ShouldRun(jobDetail, startAt);
     }
 
     /// <summary>
@@ -268,6 +312,7 @@ public partial class Trigger
             , Penetrates.GetNaming(nameof(RetryTimeout), naming)
             , Penetrates.GetNaming(nameof(StartNow), naming)
             , Penetrates.GetNaming(nameof(RunOnStart), naming)
+            , Penetrates.GetNaming(nameof(ResetOnlyOnce), naming)
             , Penetrates.GetNaming(nameof(UpdatedTime), naming)
         };
         _ = _namingColumnNames.TryAdd(naming, nameColumnNames);
@@ -332,7 +377,8 @@ WHERE [{columnNames[0]}] = '{TriggerId}' AND [{columnNames[1]}] = '{JobId}';";
     [{columnNames[16]}],
     [{columnNames[17]}],
     [{columnNames[18]}],
-    [{columnNames[19]}]
+    [{columnNames[19]}],
+    [{columnNames[20]}]
 )
 VALUES(
     '{TriggerId}',
@@ -354,6 +400,7 @@ VALUES(
     {RetryTimeout},
     {(StartNow ? 1 : 0)},
     {(RunOnStart ? 1 : 0)},
+    {(ResetOnlyOnce ? 1 : 0)},
     {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime)}
 );";
         }
@@ -381,7 +428,8 @@ SET
     [{columnNames[16]}] = {RetryTimeout},
     [{columnNames[17]}] = {(StartNow ? 1 : 0)},
     [{columnNames[18]}] = {(RunOnStart ? 1 : 0)},
-    [{columnNames[19]}] = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime)}
+    [{columnNames[19]}] = {(ResetOnlyOnce ? 1 : 0)},
+    [{columnNames[20]}] = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime)}
 WHERE [{columnNames[0]}] = '{TriggerId}' AND [{columnNames[1]}] = '{JobId}';";
         }
         return string.Empty;
@@ -450,6 +498,7 @@ WHERE [{columnNames[0]}] = '{TriggerId}' AND [{columnNames[1]}] = '{JobId}';";
             writer.WriteNumber(Penetrates.GetNaming(nameof(RetryTimeout), naming), RetryTimeout);
             writer.WriteBoolean(Penetrates.GetNaming(nameof(StartNow), naming), StartNow);
             writer.WriteBoolean(Penetrates.GetNaming(nameof(RunOnStart), naming), RunOnStart);
+            writer.WriteBoolean(Penetrates.GetNaming(nameof(ResetOnlyOnce), naming), ResetOnlyOnce);
             writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime?.ToString("o"));
 
             writer.WriteEndObject();
@@ -484,6 +533,7 @@ WHERE [{columnNames[0]}] = '{TriggerId}' AND [{columnNames[1]}] = '{JobId}';";
             , $"##{Penetrates.GetNaming(nameof(RetryTimeout), naming)}## {RetryTimeout}"
             , $"##{Penetrates.GetNaming(nameof(StartNow), naming)}## {StartNow}"
             , $"##{Penetrates.GetNaming(nameof(RunOnStart), naming)}## {RunOnStart}"
+            , $"##{Penetrates.GetNaming(nameof(ResetOnlyOnce), naming)}## {ResetOnlyOnce}"
             , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime}"
         });
     }
