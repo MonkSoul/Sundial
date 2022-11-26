@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace Sundial;
@@ -29,6 +31,16 @@ namespace Sundial;
 /// </summary>
 public static class ScheduleExtensions
 {
+    /// <summary>
+    /// 获取动态作业日志对象
+    /// </summary>
+    /// <param name="serviceProvider"><see cref="IServiceProvider"/></param>
+    /// <returns><see cref="ILogger"/></returns>
+    public static ILogger Logger(this IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetRequiredService<ILogger<DynamicJob>>();
+    }
+
     /// <summary>
     /// 判断类型是否时 IJob 实现类型
     /// </summary>
