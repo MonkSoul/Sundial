@@ -73,6 +73,16 @@ services.AddSchedule(options =>
 });
 ```
 
+> ASP.NET 6/7 版本，无`Startup.cs`文件，可直接在`Program.cs`文件中注册：
+
+```cs
+builder.AddSchedule(options =>
+{
+    options.AddJob<MyJob>(Triggers.PeriodSeconds(5)
+                , Triggers.Minutely());
+});
+```
+
 3. 运行项目：
 
 ```bash
