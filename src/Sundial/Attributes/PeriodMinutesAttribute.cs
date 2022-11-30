@@ -20,46 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using TimeCrontab;
-
 namespace Sundial;
 
 /// <summary>
-/// Cron 表达式 Macro 作业触发器
+/// 分钟周期（间隔）作业触发器特性
 /// </summary>
-public sealed class MacroAtTrigger : Trigger
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class PeriodMinutesAttribute : PeriodAttribute
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="macro">Macro 符号</param>
-    /// <param name="fields">字段值</param>
-    public MacroAtTrigger(string macro, params object[] fields)
+    /// <param name="interval">间隔（分钟）</param>
+    public PeriodMinutesAttribute(int interval)
+        : base(interval * 1000 * 60)
     {
-        Crontab = Crontab.ParseAt(macro, fields);
-    }
-
-    /// <summary>
-    /// <see cref="Crontab"/> 对象
-    /// </summary>
-    private Crontab Crontab { get; }
-
-    /// <summary>
-    /// 计算下一个触发时间
-    /// </summary>
-    /// <param name="startAt">起始时间</param>
-    /// <returns><see cref="DateTime"/></returns>
-    public override DateTime GetNextOccurrence(DateTime startAt)
-    {
-        return Crontab.GetNextOccurrence(startAt);
-    }
-
-    /// <summary>
-    /// 作业触发器转字符串输出
-    /// </summary>
-    /// <returns><see cref="string"/></returns>
-    public override string ToString()
-    {
-        return $"<{JobId} {TriggerId}> {Crontab}{(string.IsNullOrWhiteSpace(Description) ? string.Empty : $" {Description}")}";
     }
 }
