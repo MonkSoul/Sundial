@@ -171,12 +171,9 @@ public static class Triggers
     /// </summary>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder SecondlyAt(params int[] fields)
+    public static TriggerBuilder SecondlyAt(params object[] fields)
     {
-        // 检查字段合法性
-        Penetrates.CheckCronFieldsNotNullOrEmpty(fields);
-
-        return Cron($"{string.Join(',', fields)} * * * * *", CronStringFormat.WithSeconds);
+        return MacroAt("@secondly", fields);
     }
 
     /// <summary>
@@ -193,12 +190,9 @@ public static class Triggers
     /// </summary>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder MinutelyAt(params int[] fields)
+    public static TriggerBuilder MinutelyAt(params object[] fields)
     {
-        // 检查字段合法性
-        Penetrates.CheckCronFieldsNotNullOrEmpty(fields);
-
-        return Cron($"{string.Join(',', fields)} * * * * *", CronStringFormat.WithSeconds);
+        return MacroAt("@minutely", fields);
     }
 
     /// <summary>
@@ -215,12 +209,9 @@ public static class Triggers
     /// </summary>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder HourlyAt(params int[] fields)
+    public static TriggerBuilder HourlyAt(params object[] fields)
     {
-        // 检查字段合法性
-        Penetrates.CheckCronFieldsNotNullOrEmpty(fields);
-
-        return Cron($"{string.Join(',', fields)} * * * *", CronStringFormat.Default);
+        return MacroAt("@hourly", fields);
     }
 
     /// <summary>
@@ -237,12 +228,9 @@ public static class Triggers
     /// </summary>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder DailyAt(params int[] fields)
+    public static TriggerBuilder DailyAt(params object[] fields)
     {
-        // 检查字段合法性
-        Penetrates.CheckCronFieldsNotNullOrEmpty(fields);
-
-        return Cron($"0 {string.Join(',', fields)} * * *", CronStringFormat.Default);
+        return MacroAt("@daily", fields);
     }
 
     /// <summary>
@@ -259,12 +247,9 @@ public static class Triggers
     /// </summary>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder MonthlyAt(params int[] fields)
+    public static TriggerBuilder MonthlyAt(params object[] fields)
     {
-        // 检查字段合法性
-        Penetrates.CheckCronFieldsNotNullOrEmpty(fields);
-
-        return Cron($"0 0 {string.Join(',', fields)} * *", CronStringFormat.Default);
+        return MacroAt("@monthly", fields);
     }
 
     /// <summary>
@@ -283,10 +268,7 @@ public static class Triggers
     /// <returns><see cref="TriggerBuilder"/></returns>
     public static TriggerBuilder WeeklyAt(params object[] fields)
     {
-        // 检查字段合法性
-        Penetrates.CheckCronFieldsNotNullOrEmpty(fields);
-
-        return Cron($"0 0 * * {string.Join(',', fields)}", CronStringFormat.Default);
+        return MacroAt("@weekly", fields);
     }
 
     /// <summary>
@@ -305,9 +287,26 @@ public static class Triggers
     /// <returns><see cref="TriggerBuilder"/></returns>
     public static TriggerBuilder YearlyAt(params object[] fields)
     {
-        // 检查字段合法性
-        Penetrates.CheckCronFieldsNotNullOrEmpty(fields);
+        return MacroAt("@yearly", fields);
+    }
 
-        return Cron($"0 0 1 {string.Join(',', fields)} *", CronStringFormat.Default);
+    /// <summary>
+    /// 创建每周一至周五（午夜）开始作业触发器构建器
+    /// </summary>
+    /// <returns><see cref="TriggerBuilder"/></returns>
+    public static TriggerBuilder Workday()
+    {
+        return Cron("@workday");
+    }
+
+    /// <summary>
+    /// 创建 Cron 表达式作业触发器构建器
+    /// </summary>
+    /// <param name="macro">Macro 符号</param>
+    /// <param name="fields">字段值</param>
+    /// <returns><see cref="TriggerBuilder"/></returns>
+    private static TriggerBuilder MacroAt(string macro, params object[] fields)
+    {
+        return Create<MacroAtTrigger>(macro, fields);
     }
 }

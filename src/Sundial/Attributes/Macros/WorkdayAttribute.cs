@@ -23,17 +23,16 @@
 namespace Sundial;
 
 /// <summary>
-/// 特定秒开始作业触发器特性
+/// 每周一至周五（午夜）开始作业触发器特性
 /// </summary>
-[SecondlyAtAttribute, AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public sealed class SecondlyAtAttribute : MacroAtAttribute
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class WorkdayAttribute : CronAttribute
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="fields">字段值</param>
-    public SecondlyAtAttribute(params object[] fields)
-        : base("@secondly", fields)
+    public WorkdayAttribute()
+        : base("@workday")
     {
     }
 }
