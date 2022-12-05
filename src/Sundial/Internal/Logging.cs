@@ -20,22 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Sundial;
+namespace System.Logging;
 
 /// <summary>
-/// Cron 表达式 Macro 作业触发器特性
+/// ScheduleService 日志拓展默认分类名
 /// </summary>
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class MacroAtAttribute : TriggerAttribute
+internal sealed class ScheduleService
 {
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    /// <param name="macro">Macro 符号</param>
-    /// <param name="fields">字段值</param>
-    public MacroAtAttribute(string macro, params object[] fields)
-        : base(typeof(MacroAtTrigger)
-            , macro, fields)
-    {
-    }
+}
+
+/// <summary>
+/// DynamicJob 日志拓展默认分类名
+/// </summary>
+internal sealed class DynamicJob
+{
 }

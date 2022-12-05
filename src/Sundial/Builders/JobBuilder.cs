@@ -39,6 +39,17 @@ public sealed class JobBuilder : JobDetail
     /// <summary>
     /// 创建作业信息构建器
     /// </summary>
+    /// <param name="jobId">作业 Id</param>
+    /// <returns><see cref="JobBuilder"/></returns>
+    public static JobBuilder Create(string jobId)
+    {
+        return new JobBuilder()
+            .SetJobId(jobId);
+    }
+
+    /// <summary>
+    /// 创建作业信息构建器
+    /// </summary>
     /// <typeparam name="TJob"><see cref="IJob"/> 实现类型</typeparam>
     /// <returns><see cref="JobBuilder"/></returns>
     public static JobBuilder Create<TJob>()
@@ -73,12 +84,12 @@ public sealed class JobBuilder : JobDetail
     /// <summary>
     /// 创建作业信息构建器
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <returns><see cref="JobBuilder"/></returns>
-    public static JobBuilder Create(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler)
+    public static JobBuilder Create(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync)
     {
         return Create<DynamicJob>()
-            .SetDynamicHandler(dynamicHandler);
+            .SetDynamicExecuteAsync(dynamicExecuteAsync);
     }
 
     /// <summary>
@@ -119,7 +130,8 @@ public sealed class JobBuilder : JobDetail
                      .SetDescription(fromJobBuilder.Description)
                      .SetConcurrent(fromJobBuilder.Concurrent)
                      .SetIncludeAnnotations(fromJobBuilder.IncludeAnnotations)
-                     .SetProperties(fromJobBuilder.Properties);
+                     .SetProperties(fromJobBuilder.Properties)
+                     .SetDynamicExecuteAsync(fromJobBuilder.DynamicExecuteAsync);
     }
 
     /// <summary>
@@ -127,8 +139,9 @@ public sealed class JobBuilder : JobDetail
     /// </summary>
     /// <param name="value">目标值</param>
     /// <param name="ignoreNullValue">忽略空值</param>
+    /// <param name="ignorePropertyNames">忽略属性名</param>
     /// <returns><see cref="JobBuilder"/></returns>
-    public JobBuilder LoadFrom(object value, bool ignoreNullValue = false)
+    public JobBuilder LoadFrom(object value, bool ignoreNullValue = false, string[] ignorePropertyNames = default)
     {
         if (value == null) return this;
 
@@ -139,7 +152,7 @@ public sealed class JobBuilder : JobDetail
             || valueType.IsEnum
             || valueType.IsArray) throw new InvalidOperationException(nameof(value));
 
-        var jobBuilder = value.MapTo<JobBuilder>(this, ignoreNullValue);
+        var jobBuilder = value.MapTo<JobBuilder>(this, ignoreNullValue, ignorePropertyNames);
 
         // 初始化运行时作业类型和额外数据
         jobBuilder.SetJobType(jobBuilder.AssemblyName, jobBuilder.JobType)
@@ -267,13 +280,13 @@ public sealed class JobBuilder : JobDetail
     }
 
     /// <summary>
-    /// 设置运行时动态作业处理程序
+    /// 设置运行时动态作业执行逻辑
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <returns><see cref="JobBuilder"/></returns>
-    public JobBuilder SetDynamicHandler(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler)
+    public JobBuilder SetDynamicExecuteAsync(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync)
     {
-        DynamicHandler = dynamicHandler;
+        DynamicExecuteAsync = dynamicExecuteAsync;
 
         return this;
     }
@@ -333,12 +346,14 @@ public sealed class JobBuilder : JobDetail
     /// <summary>
     /// 添加或更新作业信息额外数据
     /// </summary>
+    /// <typeparam name="T">值类型</typeparam>
     /// <param name="key">键</param>
-    /// <param name="value">值</param>
-    /// <returns><see cref="JobBuilder"/></returns>
-    public new JobBuilder AddOrUpdateProperty(string key, object value)
+    /// <param name="newValue">新值</param>
+    /// <param name="updateAction">更新委托，如果传递了该参数，那么键存在使则使用该参数的返回值</param>
+    /// <returns><see cref="JobDetail"/></returns>
+    public new JobBuilder AddOrUpdateProperty<T>(string key, T newValue, Func<T, object> updateAction = default)
     {
-        return base.AddOrUpdateProperty(key, value) as JobBuilder;
+        return base.AddOrUpdateProperty(key, newValue, updateAction) as JobBuilder;
     }
 
     /// <summary>
@@ -369,10 +384,9 @@ public sealed class JobBuilder : JobDetail
         // 空检查
         if (string.IsNullOrWhiteSpace(JobId)) throw new ArgumentNullException(nameof(JobId));
 
-        // 检查类型
-        if (!string.IsNullOrWhiteSpace(AssemblyName)
-            && !string.IsNullOrWhiteSpace(JobType)
-            && RuntimeJobType == null) SetJobType(AssemblyName, JobType);
+        // 避免类型还未初始化，强制检查一次
+        SetJobType(AssemblyName, JobType);
+        SetProperties(Properties);
 
         return this.MapTo<JobDetail>();
     }

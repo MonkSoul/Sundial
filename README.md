@@ -49,16 +49,15 @@ dotnet add package Sundial
 public class MyJob : IJob
 {
     private readonly ILogger<MyJob> _logger;
-
     public MyJob(ILogger<MyJob> logger)
     {
         _logger = logger;
     }
 
-    public async Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
+    public Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
-        _logger.LogInformation($"{context.JobDetail}  {context.Trigger} {context.OccurrenceTime}");
-        await Task.CompletedTask;
+        _logger.LogInformation($"{context}");
+        return Task.CompletedTask;
     }
 }
 ```
@@ -68,40 +67,57 @@ public class MyJob : IJob
 ```cs
 services.AddSchedule(options =>
 {
-    options.AddJob<MyJob>(Triggers.PeriodSeconds(5)
-                , Triggers.Minutely());
-});
-```
-
-> ASP.NET 6/7 版本，无 `Startup.cs` 文件，可直接在 `Program.cs` 文件中注册：
-
-```cs
-builder.Services.AddSchedule(options =>
-{
-    options.AddJob<MyJob>(Triggers.PeriodSeconds(5)
-                , Triggers.Minutely());
+    options.AddJob<MyJob>(Triggers.Minutely()   // 每分钟开始
+     , Triggers.Period(5000)   // 每 5 秒，还支持 Triggers.PeriodSeconds(5)，Triggers.PeriodMinutes(5)，Triggers.PeriodHours(5)
+     , Triggers.Cron("3,7,8 * * * * ?", CronStringFormat.WithSeconds));  // 每分钟第 3/7/8 秒
 });
 ```
 
 3. 运行项目：
 
 ```bash
-info: System.Logging.ScheduleService[0]
-      Schedule Hosted Service is running.
-warn: System.Logging.ScheduleService[0]
-      Schedule Hosted Service cancels hibernation and GC.Collect().
-info: System.Logging.ScheduleService[0]
-      The Scheduler of <job1> successfully updated to the schedule.
-info: Sundial.Samples.MyJob[0]
-      <job1>   <job1 job1_trigger2>  5000ms 2022/11/23 16:22:51
-info: Sundial.Samples.MyJob[0]
-      <job1>   <job1 job1_trigger2>  5000ms 2022/11/23 16:22:56
-info: Sundial.Samples.MyJob[0]
-      <job1>   <job1 job1_trigger3>  * * * * * 2022/11/23 16:23:00
-info: Sundial.Samples.MyJob[0]
-      <job1>   <job1 job1_trigger2>  5000ms 2022/11/23 16:23:01
-info: Sundial.Samples.MyJob[0]
-      <job1>   <job1 job1_trigger2>  5000ms 2022/11/23 16:23:07
+info: 2022-12-02 17:18:53.3593518 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+      Schedule hosted service is running.
+info: 2022-12-02 17:18:53.3663583 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+      Schedule hosted service is preloading...
+info: 2022-12-02 17:18:54.0381456 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+      The <job1_trigger1> trigger for scheduler of <job1> successfully appended to the schedule.
+info: 2022-12-02 17:18:54.0708796 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+      The <job1_trigger2> trigger for scheduler of <job1> successfully appended to the schedule.
+info: 2022-12-02 17:18:54.0770193 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+      The <job1_trigger3> trigger for scheduler of <job1> successfully appended to the schedule.
+info: 2022-12-02 17:18:54.0800017 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+      The scheduler of <job1> successfully appended to the schedule.
+warn: 2022-12-02 17:18:54.1206816 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+      Schedule hosted service preload completed, and a total of <1> schedulers are appended.
+info: 2022-12-02 17:18:59.0040452 +08:00 星期五 L MyJob[0] #9
+      <job1> [C] <job1 job1_trigger2> 5000ms 1ts 2022-12-02 17:18:58.927 -> 2022-12-02 17:19:03.944
+info: 2022-12-02 17:19:00.0440142 +08:00 星期五 L MyJob[0] #15
+      <job1> [C] <job1 job1_trigger1> * * * * * 1ts 2022-12-02 17:19:00.000 -> 2022-12-02 17:20:00.000
+info: 2022-12-02 17:19:03.0149075 +08:00 星期五 L MyJob[0] #6
+      <job1> [C] <job1 job1_trigger3> 3,7,8 * * * * ? 1ts 2022-12-02 17:19:03.000 -> 2022-12-02 17:19:07.000
+info: 2022-12-02 17:19:03.9519350 +08:00 星期五 L MyJob[0] #15
+      <job1> [C] <job1 job1_trigger2> 5000ms 2ts 2022-12-02 17:19:03.944 -> 2022-12-02 17:19:08.919
+info: 2022-12-02 17:19:07.0116797 +08:00 星期五 L MyJob[0] #4
+      <job1> [C] <job1 job1_trigger3> 3,7,8 * * * * ? 2ts 2022-12-02 17:19:07.000 -> 2022-12-02 17:19:08.000
+info: 2022-12-02 17:19:08.0078132 +08:00 星期五 L MyJob[0] #15
+      <job1> [C] <job1 job1_trigger3> 3,7,8 * * * * ? 3ts 2022-12-02 17:19:08.000 -> 2022-12-02 17:20:03.000
+info: 2022-12-02 17:19:08.9298393 +08:00 星期五 L MyJob[0] #14
+      <job1> [C] <job1 job1_trigger2> 5000ms 3ts 2022-12-02 17:19:08.919 -> 2022-12-02 17:19:13.897
+info: 2022-12-02 17:19:13.9056247 +08:00 星期五 L MyJob[0] #8
+      <job1> [C] <job1 job1_trigger2> 5000ms 4ts 2022-12-02 17:19:13.897 -> 2022-12-02 17:19:18.872
+info: 2022-12-02 17:19:18.8791123 +08:00 星期五 L MyJob[0] #12
+      <job1> [C] <job1 job1_trigger2> 5000ms 5ts 2022-12-02 17:19:18.872 -> 2022-12-02 17:19:23.846
+```
+
+`JobExecutionContext` 重写了 `ToString()` 方法并提供以下几种格式：
+
+```bash
+# 持续运行格式
+<作业Id> 作业描述 [并行C/串行S] <作业Id 触发器Id> 触发器字符串 触发器描述 触发次数ts 触发时间 -> 下一次触发时间
+
+# 触发停止格式
+<作业Id> 作业描述 [并行C/串行S] <作业Id 触发器Id> 触发器字符串 触发器描述 触发次数ts 触发时间 [触发器终止状态]
 ```
 
 [更多文档](https://furion.baiqian.ltd/docs/job/)

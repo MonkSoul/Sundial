@@ -48,26 +48,6 @@ public sealed class TriggerBuilder : Trigger
     }
 
     /// <summary>
-    /// 创建秒周期（间隔）作业触发器构建器
-    /// </summary>
-    /// <param name="interval">间隔（秒）</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder PeriodSeconds(int interval)
-    {
-        return Create<PeriodSecondsTrigger>(interval);
-    }
-
-    /// <summary>
-    /// 创建分钟周期（间隔）作业触发器构建器
-    /// </summary>
-    /// <param name="interval">间隔（分钟）</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder PeriodMinutes(int interval)
-    {
-        return Create<PeriodMinutesTrigger>(interval);
-    }
-
-    /// <summary>
     /// 创建 Cron 表达式作业触发器构建器
     /// </summary>
     /// <param name="schedule">Cron 表达式</param>
@@ -75,18 +55,29 @@ public sealed class TriggerBuilder : Trigger
     /// <returns><see cref="TriggerBuilder"/></returns>
     public static TriggerBuilder Cron(string schedule, CronStringFormat format = CronStringFormat.Default)
     {
-        return Create<CronTrigger>(schedule, (int)format);
+        return Create<CronTrigger>(schedule, format);
     }
 
     /// <summary>
-    /// 创建 Cron 表达式 Macro 作业触发器构建器
+    /// 创建 Cron 表达式作业触发器构建器
     /// </summary>
-    /// <param name="macro">Macro 符号</param>
-    /// <param name="fields">字段值</param>
+    /// <param name="schedule">Cron 表达式</param>
+    /// <param name="args">动态参数类型，支持 <see cref="int"/>，<see cref="CronStringFormat"/> 和 object[]</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder MacroAt(string macro, params object[] fields)
+    internal static TriggerBuilder Cron(string schedule, object args)
     {
-        return Create<MacroAtTrigger>(macro, fields);
+        return Create<CronTrigger>(schedule, args);
+    }
+
+    /// <summary>
+    /// 创建作业触发器构建器
+    /// </summary>
+    /// <param name="triggerId">作业触发器 Id</param>
+    /// <returns><see cref="JobBuilder"/></returns>
+    public static TriggerBuilder Create(string triggerId)
+    {
+        return new TriggerBuilder()
+            .SetTriggerId(triggerId);
     }
 
     /// <summary>
@@ -121,7 +112,8 @@ public sealed class TriggerBuilder : Trigger
     public static TriggerBuilder Create(string assemblyName, string triggerTypeFullName)
     {
         return new TriggerBuilder()
-            .SetTriggerType(assemblyName, triggerTypeFullName);
+            .SetTriggerType(assemblyName, triggerTypeFullName)
+            .Appended();
     }
 
     /// <summary>
@@ -144,7 +136,8 @@ public sealed class TriggerBuilder : Trigger
     public static TriggerBuilder Create(Type triggerType)
     {
         return new TriggerBuilder()
-            .SetTriggerType(triggerType);
+            .SetTriggerType(triggerType)
+            .Appended();
     }
 
     /// <summary>
@@ -171,7 +164,7 @@ public sealed class TriggerBuilder : Trigger
         triggerBuilder.SetTriggerType(triggerBuilder.AssemblyName, triggerBuilder.TriggerType)
             .SetArgs(triggerBuilder.Args);
 
-        return triggerBuilder;
+        return triggerBuilder.Updated();
     }
 
     /// <summary>
@@ -181,7 +174,7 @@ public sealed class TriggerBuilder : Trigger
     /// <returns><see cref="TriggerBuilder"/></returns>
     public static TriggerBuilder From(string json)
     {
-        return From(Penetrates.Deserialize<Trigger>(json));
+        return From(Penetrates.Deserialize<Trigger>(json)).Appended();
     }
 
     /// <summary>
@@ -210,8 +203,9 @@ public sealed class TriggerBuilder : Trigger
     /// </summary>
     /// <param name="value">目标值</param>
     /// <param name="ignoreNullValue">忽略空值</param>
+    /// <param name="ignorePropertyNames">忽略属性名</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public TriggerBuilder LoadFrom(object value, bool ignoreNullValue = false)
+    public TriggerBuilder LoadFrom(object value, bool ignoreNullValue = false, string[] ignorePropertyNames = default)
     {
         if (value == null) return this;
 
@@ -222,7 +216,7 @@ public sealed class TriggerBuilder : Trigger
             || valueType.IsEnum
             || valueType.IsArray) throw new InvalidOperationException(nameof(value));
 
-        var triggerBuilder = value.MapTo<TriggerBuilder>(this, ignoreNullValue);
+        var triggerBuilder = value.MapTo<TriggerBuilder>(this, ignoreNullValue, ignorePropertyNames);
 
         // 初始化运行时作业触发器类型和参数
         triggerBuilder.SetTriggerType(triggerBuilder.AssemblyName, triggerBuilder.TriggerType)
@@ -542,6 +536,36 @@ public sealed class TriggerBuilder : Trigger
     }
 
     /// <summary>
+    /// 标记作业触发器计划为新增行为
+    /// </summary>
+    /// <returns><see cref="TriggerBuilder"/></returns>
+    public TriggerBuilder Appended()
+    {
+        Behavior = PersistenceBehavior.Appended;
+        return this;
+    }
+
+    /// <summary>
+    /// 标记作业触发器计划为更新行为
+    /// </summary>
+    /// <returns><see cref="TriggerBuilder"/></returns>
+    public TriggerBuilder Updated()
+    {
+        Behavior = PersistenceBehavior.Updated;
+        return this;
+    }
+
+    /// <summary>
+    /// 标记作业触发器为删除行为
+    /// </summary>
+    /// <returns><see cref="TriggerBuilder"/></returns>
+    public TriggerBuilder Removed()
+    {
+        Behavior = PersistenceBehavior.Removed;
+        return this;
+    }
+
+    /// <summary>
     /// 隐藏作业触发器公开方法
     /// </summary>
     /// <param name="startAt">起始时间</param>
@@ -567,13 +591,9 @@ public sealed class TriggerBuilder : Trigger
         // 空检查
         if (string.IsNullOrWhiteSpace(jobId)) throw new ArgumentNullException(nameof(jobId));
 
-        // 检查类型
-        if (!string.IsNullOrWhiteSpace(AssemblyName)
-            && !string.IsNullOrWhiteSpace(TriggerType)
-            && RuntimeTriggerType == null) SetTriggerType(AssemblyName, TriggerType);
-
-        // 检查参数
-        if (!string.IsNullOrWhiteSpace(Args) && RuntimeTriggerArgs == null) SetArgs(Args);
+        // 避免类型还未初始化，强制检查一次
+        SetTriggerType(AssemblyName, TriggerType);
+        SetArgs(Args);
 
         // 检查 StartTime 和 EndTime 的关系，StartTime 不能大于 EndTime
         if (StartTime != null && EndTime != null

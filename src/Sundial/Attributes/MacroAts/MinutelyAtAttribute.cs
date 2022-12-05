@@ -26,7 +26,7 @@ namespace Sundial;
 /// 每分钟特定秒开始作业触发器特性
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public sealed class MinutelyAtAttribute : MacroAtAttribute
+public sealed class MinutelyAtAttribute : CronAttribute
 {
     /// <summary>
     /// 构造函数

@@ -28,7 +28,7 @@ namespace Sundial;
 /// <summary>
 /// 模板静态类
 /// </summary>
-public static class TP
+internal static class TP
 {
     /// <summary>
     /// 模板正则表达式对象
@@ -42,7 +42,7 @@ public static class TP
     /// <param name="description">描述</param>
     /// <param name="items">列表项，如果以 ##xxx## 开头，自动生成 xxx: 属性</param>
     /// <returns><see cref="string"/></returns>
-    public static string Wrapper(string title, string description, params string[] items)
+    internal static string Wrapper(string title, string description, params string[] items)
     {
         // 处理不同编码问题
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

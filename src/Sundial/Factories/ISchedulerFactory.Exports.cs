@@ -31,18 +31,20 @@ public partial interface ISchedulerFactory : IDisposable
     /// 查找所有作业
     /// </summary>
     /// <param name="group">作业组名称</param>
+    /// <param name="active">是否是有效的作业</param>
     /// <returns><see cref="IEnumerable{IScheduler}"/></returns>
-    IEnumerable<IScheduler> GetJobs(string group = default);
+    IEnumerable<IScheduler> GetJobs(string group = default, bool active = false);
 
     /// <summary>
     /// 查找所有作业并转换成 <see cref="SchedulerModel"/>
     /// </summary>
     /// <param name="group">作业组名称</param>
+    /// <param name="active">是否是有效的作业</param>
     /// <returns><see cref="IEnumerable{SchedulerModel}"/></returns>
-    IEnumerable<SchedulerModel> GetJobsOfModels(string group = default);
+    IEnumerable<SchedulerModel> GetJobsOfModels(string group = default, bool active = false);
 
     /// <summary>
-    /// 查找下一个触发的作业
+    /// 查找下一批触发的作业
     /// </summary>
     /// <param name="startAt">起始时间</param>
     /// <param name="group">作业组名称</param>
@@ -50,7 +52,7 @@ public partial interface ISchedulerFactory : IDisposable
     IEnumerable<IScheduler> GetNextRunJobs(DateTime startAt, string group = default);
 
     /// <summary>
-    /// 查找下一个触发的作业并转换成 <see cref="SchedulerModel"/>
+    /// 查找下一批触发的作业并转换成 <see cref="SchedulerModel"/>
     /// </summary>
     /// <param name="startAt">起始时间</param>
     /// <param name="group">作业组名称</param>
@@ -73,11 +75,26 @@ public partial interface ISchedulerFactory : IDisposable
     IScheduler GetJob(string jobId);
 
     /// <summary>
+    /// 保存作业
+    /// </summary>
+    /// <param name="schedulerBuilder">作业计划构建器</param>
+    /// <param name="scheduler">作业计划</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    ScheduleResult TrySaveJob(SchedulerBuilder schedulerBuilder, out IScheduler scheduler, bool immediately = true);
+
+    /// <summary>
+    /// 保存作业
+    /// </summary>
+    /// <param name="schedulerBuilders">作业计划构建器集合</param>
+    void SaveJob(params SchedulerBuilder[] schedulerBuilders);
+
+    /// <summary>
     /// 添加作业
     /// </summary>
     /// <param name="schedulerBuilder">作业计划构建器</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob(SchedulerBuilder schedulerBuilder, out IScheduler scheduler, bool immediately = true);
 
@@ -93,7 +110,7 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="jobBuilder">作业信息构建器</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob(JobBuilder jobBuilder, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
@@ -110,7 +127,7 @@ public partial interface ISchedulerFactory : IDisposable
     /// <typeparam name="TJob"><see cref="IJob"/> 实现类型</typeparam>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <remarks><see cref="ScheduleResult"/></remarks>
     ScheduleResult TryAddJob<TJob>(TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true)
         where TJob : class, IJob;
@@ -121,19 +138,19 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="jobType"><see cref="IJob"/> 实现类型</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <remarks><see cref="ScheduleResult"/></remarks>
     ScheduleResult TryAddJob(Type jobType, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <remarks><see cref="ScheduleResult"/></remarks>
-    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
+    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
@@ -153,9 +170,9 @@ public partial interface ISchedulerFactory : IDisposable
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
-    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, params TriggerBuilder[] triggerBuilders);
+    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, params TriggerBuilder[] triggerBuilders);
 
     /// <summary>
     /// 添加作业
@@ -164,7 +181,7 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="jobId">作业 Id</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob<TJob>(string jobId, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true)
         where TJob : class, IJob;
@@ -176,20 +193,20 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="jobId">作业 Id</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob(Type jobType, string jobId, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="jobId">作业 Id</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
-    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, string jobId, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
+    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, string jobId, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
@@ -211,10 +228,10 @@ public partial interface ISchedulerFactory : IDisposable
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="jobId">作业 Id</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
-    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, string jobId, params TriggerBuilder[] triggerBuilders);
+    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, string jobId, params TriggerBuilder[] triggerBuilders);
 
     /// <summary>
     /// 添加作业
@@ -224,7 +241,7 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob<TJob>(string jobId, bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true)
         where TJob : class, IJob;
@@ -237,21 +254,21 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob(Type jobType, string jobId, bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="jobId">作业 Id</param>
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
-    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, string jobId, bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
+    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, string jobId, bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
@@ -275,11 +292,11 @@ public partial interface ISchedulerFactory : IDisposable
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="jobId">作业 Id</param>
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
-    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders);
+    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders);
 
     /// <summary>
     /// 添加作业
@@ -288,7 +305,7 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob<TJob>(bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true)
         where TJob : class, IJob;
@@ -300,20 +317,20 @@ public partial interface ISchedulerFactory : IDisposable
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryAddJob(Type jobType, bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
-    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
+    ScheduleResult TryAddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, bool concurrent, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 添加作业
@@ -335,54 +352,54 @@ public partial interface ISchedulerFactory : IDisposable
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <param name="dynamicHandler">运行时动态作业处理程序</param>
+    /// <param name="dynamicExecuteAsync">运行时动态作业执行逻辑</param>
     /// <param name="concurrent">是否采用并发执行</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
-    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicHandler, bool concurrent, params TriggerBuilder[] triggerBuilders);
+    void AddJob(Func<IServiceProvider, JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, bool concurrent, params TriggerBuilder[] triggerBuilders);
 
     /// <summary>
     /// 更新作业
     /// </summary>
     /// <param name="schedulerBuilder">作业计划构建器</param>
     /// <param name="scheduler">新的作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryUpdateJob(SchedulerBuilder schedulerBuilder, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 更新作业
     /// </summary>
-    /// <param name="schedulerBuilder">作业计划构建器</param>
-    void UpdateJob(SchedulerBuilder schedulerBuilder);
+    /// <param name="schedulerBuilders">作业计划构建器集合</param>
+    void UpdateJob(params SchedulerBuilder[] schedulerBuilders);
 
     /// <summary>
     /// 删除作业
     /// </summary>
     /// <param name="jobId">作业 Id</param>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryRemoveJob(string jobId, out IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 删除作业
     /// </summary>
-    /// <param name="jobId">作业 Id</param>
-    void RemoveJob(string jobId);
+    /// <param name="jobIds">作业 Id 集合</param>
+    void RemoveJob(params string[] jobIds);
 
     /// <summary>
     /// 删除作业
     /// </summary>
     /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">使作业调度器立即载入</param>
+    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
     /// <returns><see cref="ScheduleResult"/></returns>
     ScheduleResult TryRemoveJob(IScheduler scheduler, bool immediately = true);
 
     /// <summary>
     /// 删除作业
     /// </summary>
-    /// <param name="scheduler">作业计划</param>
-    void RemoveJob(IScheduler scheduler);
+    /// <param name="schedulers">作业计划集合</param>
+    void RemoveJob(params IScheduler[] schedulers);
 
     /// <summary>
     /// 检查作业是否存在
@@ -417,7 +434,7 @@ public partial interface ISchedulerFactory : IDisposable
     void PersistAll(string group = default);
 
     /// <summary>
-    /// 校对作业计划
+    /// 校对所有作业
     /// </summary>
     /// <param name="group">作业组名称</param>
     void CollateAll(string group = default);

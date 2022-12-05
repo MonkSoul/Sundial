@@ -63,7 +63,7 @@ public partial class Trigger
     /// <returns><see cref="string"/></returns>
     public override string ToString()
     {
-        return $"<{JobId} {TriggerId}>{(string.IsNullOrWhiteSpace(Description) ? string.Empty : $" {Description}")}";
+        return $"<{JobId} {TriggerId}>{(string.IsNullOrWhiteSpace(Description) ? string.Empty : $" {Description.GetMaxLengthString()}")} {NumberOfRuns}ts";
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public partial class Trigger
         {
             NumberOfRuns = 0;
             SetStatus(TriggerStatus.Ready);
-            NextRunTime = CheckRunOnStarAndReturnNextRunTime(startAt);
+            NextRunTime = CheckRunOnStartAndReturnNextRunTime(startAt);
 
             if (MaxNumberOfErrors > 0 && NumberOfErrors >= MaxNumberOfErrors)
             {
@@ -103,7 +103,7 @@ public partial class Trigger
         }
 
         // 检查下一次执行信息
-        if (CheckNextOccurrence(jobDetail, startAt)) NextRunTime = GetNextRunTime(startAt);
+        if (CheckAndFixNextOccurrence(jobDetail, startAt)) NextRunTime = GetNextRunTime(startAt);
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public partial class Trigger
         NumberOfErrors++;
 
         // 检查下一次执行信息
-        if (CheckNextOccurrence(jobDetail, startAt)) SetStatus(TriggerStatus.ErrorToReady);
+        if (CheckAndFixNextOccurrence(jobDetail, startAt)) SetStatus(TriggerStatus.ErrorToReady);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public partial class Trigger
     /// </summary>
     /// <param name="startAt">起始时间</param>
     /// <returns><see cref="DateTime"/></returns>
-    internal DateTime? CheckRunOnStarAndReturnNextRunTime(DateTime startAt)
+    internal DateTime? CheckRunOnStartAndReturnNextRunTime(DateTime startAt)
     {
         return !(StartNow && RunOnStart)
               ? GetNextRunTime(startAt)
@@ -192,12 +192,12 @@ public partial class Trigger
     }
 
     /// <summary>
-    /// 检查下一次执行信息
+    /// 检查下一次执行信息并修正 <see cref="NextRunTime"/> 和 <see cref="Status"/>
     /// </summary>
     /// <param name="jobDetail">作业信息</param>
     /// <param name="startAt">起始时间</param>
     /// <returns><see cref="bool"/></returns>
-    internal bool CheckNextOccurrence(JobDetail jobDetail, DateTime startAt)
+    internal bool CheckAndFixNextOccurrence(JobDetail jobDetail, DateTime startAt)
     {
         // 检查作业信息运行时类型
         if (jobDetail.RuntimeJobType == null)
@@ -227,6 +227,7 @@ public partial class Trigger
         if (StartTime != null && StartTime.Value > startAt)
         {
             SetStatus(TriggerStatus.Backlog);
+            NextRunTime = null;
             return false;
         }
 
@@ -234,6 +235,7 @@ public partial class Trigger
         if (EndTime != null && EndTime.Value < startAt)
         {
             SetStatus(TriggerStatus.Archived);
+            NextRunTime = null;
             return false;
         }
 
@@ -241,6 +243,7 @@ public partial class Trigger
         if (MaxNumberOfRuns > 0 && NumberOfRuns >= MaxNumberOfRuns)
         {
             SetStatus(TriggerStatus.Overrun);
+            NextRunTime = null;
             return false;
         }
 
@@ -248,6 +251,7 @@ public partial class Trigger
         if (MaxNumberOfErrors > 0 && NumberOfErrors >= MaxNumberOfErrors)
         {
             SetStatus(TriggerStatus.Panic);
+            NextRunTime = null;
             return false;
         }
 
@@ -268,15 +272,28 @@ public partial class Trigger
     }
 
     /// <summary>
-    /// 执行条件检查（内部检查）
+    /// 下一次可执行检查
+    /// </summary>
+    /// <param name="startAt">起始时间</param>
+    /// <returns><see cref="bool"/></returns>
+    internal bool NextShouldRun(DateTime startAt)
+    {
+        return IsNormalStatus()
+            && NextRunTime != null
+            && NextRunTime.Value >= startAt;
+    }
+
+    /// <summary>
+    /// 当前可执行检查
     /// </summary>
     /// <param name="jobDetail">作业信息</param>
     /// <param name="startAt">起始时间</param>
     /// <returns><see cref="bool"/></returns>
-    internal bool InternalShouldRun(JobDetail jobDetail, DateTime startAt)
+    internal bool CurrentShouldRun(JobDetail jobDetail, DateTime startAt)
     {
-        // 调用派生类 ShouldRun 方法
-        return CheckNextOccurrence(jobDetail, startAt) && ShouldRun(jobDetail, startAt);
+        return CheckAndFixNextOccurrence(jobDetail, startAt)
+            // 调用派生类 ShouldRun 方法
+            && ShouldRun(jobDetail, startAt);
     }
 
     /// <summary>
@@ -416,10 +433,10 @@ VALUES(
     {Penetrates.GetNoNumberSqlValueOrNull(Args)},
     {Penetrates.GetNoNumberSqlValueOrNull(Description)},
     {((int)Status)},
-    {Penetrates.GetNoNumberSqlValueOrNull(StartTime)},
-    {Penetrates.GetNoNumberSqlValueOrNull(EndTime)},
-    {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime)},
-    {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime)},
+    {Penetrates.GetNoNumberSqlValueOrNull(StartTime.ToUnspecifiedString())},
+    {Penetrates.GetNoNumberSqlValueOrNull(EndTime.ToUnspecifiedString())},
+    {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime.ToUnspecifiedString())},
+    {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime.ToUnspecifiedString())},
     {NumberOfRuns},
     {MaxNumberOfRuns},
     {NumberOfErrors},
@@ -429,7 +446,7 @@ VALUES(
     {Penetrates.GetBooleanSqlValue(StartNow)},
     {Penetrates.GetBooleanSqlValue(RunOnStart)},
     {Penetrates.GetBooleanSqlValue(ResetOnlyOnce)},
-    {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime)}
+    {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
 );";
     }
 
@@ -453,10 +470,10 @@ SET
     {columnNames[4]} = {Penetrates.GetNoNumberSqlValueOrNull(Args)},
     {columnNames[5]} = {Penetrates.GetNoNumberSqlValueOrNull(Description)},
     {columnNames[6]} = {((int)Status)},
-    {columnNames[7]} = {Penetrates.GetNoNumberSqlValueOrNull(StartTime)},
-    {columnNames[8]} = {Penetrates.GetNoNumberSqlValueOrNull(EndTime)},
-    {columnNames[9]} = {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime)},
-    {columnNames[10]} = {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime)},
+    {columnNames[7]} = {Penetrates.GetNoNumberSqlValueOrNull(StartTime.ToUnspecifiedString())},
+    {columnNames[8]} = {Penetrates.GetNoNumberSqlValueOrNull(EndTime.ToUnspecifiedString())},
+    {columnNames[9]} = {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime.ToUnspecifiedString())},
+    {columnNames[10]} = {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime.ToUnspecifiedString())},
     {columnNames[11]} = {NumberOfRuns},
     {columnNames[12]} = {MaxNumberOfRuns},
     {columnNames[13]} = {NumberOfErrors},
@@ -466,7 +483,7 @@ SET
     {columnNames[17]} = {Penetrates.GetBooleanSqlValue(StartNow)},
     {columnNames[18]} = {Penetrates.GetBooleanSqlValue(RunOnStart)},
     {columnNames[19]} = {Penetrates.GetBooleanSqlValue(ResetOnlyOnce)},
-    {columnNames[20]} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime)}
+    {columnNames[20]} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
 WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {columnNames[1]} = {Penetrates.GetNoNumberSqlValueOrNull(JobId)};";
     }
 
@@ -503,10 +520,10 @@ WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {
             writer.WriteString(Penetrates.GetNaming(nameof(Args), naming), Args);
             writer.WriteString(Penetrates.GetNaming(nameof(Description), naming), Description);
             writer.WriteNumber(Penetrates.GetNaming(nameof(Status), naming), (int)Status);
-            writer.WriteString(Penetrates.GetNaming(nameof(StartTime), naming), StartTime?.ToString("o"));
-            writer.WriteString(Penetrates.GetNaming(nameof(EndTime), naming), EndTime?.ToString("o"));
-            writer.WriteString(Penetrates.GetNaming(nameof(LastRunTime), naming), LastRunTime?.ToString("o"));
-            writer.WriteString(Penetrates.GetNaming(nameof(NextRunTime), naming), NextRunTime?.ToString("o"));
+            writer.WriteString(Penetrates.GetNaming(nameof(StartTime), naming), StartTime.ToUnspecifiedString());
+            writer.WriteString(Penetrates.GetNaming(nameof(EndTime), naming), EndTime.ToUnspecifiedString());
+            writer.WriteString(Penetrates.GetNaming(nameof(LastRunTime), naming), LastRunTime.ToUnspecifiedString());
+            writer.WriteString(Penetrates.GetNaming(nameof(NextRunTime), naming), NextRunTime.ToUnspecifiedString());
             writer.WriteNumber(Penetrates.GetNaming(nameof(NumberOfRuns), naming), NumberOfRuns);
             writer.WriteNumber(Penetrates.GetNaming(nameof(MaxNumberOfRuns), naming), MaxNumberOfRuns);
             writer.WriteNumber(Penetrates.GetNaming(nameof(NumberOfErrors), naming), NumberOfErrors);
@@ -516,7 +533,7 @@ WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {
             writer.WriteBoolean(Penetrates.GetNaming(nameof(StartNow), naming), StartNow);
             writer.WriteBoolean(Penetrates.GetNaming(nameof(RunOnStart), naming), RunOnStart);
             writer.WriteBoolean(Penetrates.GetNaming(nameof(ResetOnlyOnce), naming), ResetOnlyOnce);
-            writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime?.ToString("o"));
+            writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime.ToUnspecifiedString());
 
             writer.WriteEndObject();
         });
@@ -538,10 +555,10 @@ WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {
             , $"##{Penetrates.GetNaming(nameof(Args), naming)}## {Args}"
             , $"##{Penetrates.GetNaming(nameof(Description), naming)}## {Description}"
             , $"##{Penetrates.GetNaming(nameof(Status), naming)}## {Status}"
-            , $"##{Penetrates.GetNaming(nameof(StartTime), naming)}## {StartTime}"
-            , $"##{Penetrates.GetNaming(nameof(EndTime), naming)}## {EndTime}"
-            , $"##{Penetrates.GetNaming(nameof(LastRunTime), naming)}## {LastRunTime}"
-            , $"##{Penetrates.GetNaming(nameof(NextRunTime), naming)}## {NextRunTime}"
+            , $"##{Penetrates.GetNaming(nameof(StartTime), naming)}## {StartTime.ToUnspecifiedString()}"
+            , $"##{Penetrates.GetNaming(nameof(EndTime), naming)}## {EndTime.ToUnspecifiedString()}"
+            , $"##{Penetrates.GetNaming(nameof(LastRunTime), naming)}## {LastRunTime.ToUnspecifiedString()}"
+            , $"##{Penetrates.GetNaming(nameof(NextRunTime), naming)}## {NextRunTime.ToUnspecifiedString()}"
             , $"##{Penetrates.GetNaming(nameof(NumberOfRuns), naming)}## {NumberOfRuns}"
             , $"##{Penetrates.GetNaming(nameof(MaxNumberOfRuns), naming)}## {MaxNumberOfRuns}"
             , $"##{Penetrates.GetNaming(nameof(NumberOfErrors), naming)}## {NumberOfErrors}"
@@ -551,7 +568,7 @@ WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {
             , $"##{Penetrates.GetNaming(nameof(StartNow), naming)}## {StartNow}"
             , $"##{Penetrates.GetNaming(nameof(RunOnStart), naming)}## {RunOnStart}"
             , $"##{Penetrates.GetNaming(nameof(ResetOnlyOnce), naming)}## {ResetOnlyOnce}"
-            , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime}"
+            , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime.ToUnspecifiedString()}"
         });
     }
 }

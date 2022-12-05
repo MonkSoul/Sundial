@@ -36,9 +36,9 @@ public static class ScheduleExtensions
     /// </summary>
     /// <param name="serviceProvider"><see cref="IServiceProvider"/></param>
     /// <returns><see cref="ILogger"/></returns>
-    public static ILogger Logger(this IServiceProvider serviceProvider)
+    public static ILogger GetLogger(this IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredService<ILogger<DynamicJob>>();
+        return serviceProvider.GetRequiredService<ILogger<System.Logging.DynamicJob>>();
     }
 
     /// <summary>
@@ -62,9 +62,9 @@ public static class ScheduleExtensions
     /// <param name="jobTypes">作业类型集合</param>
     /// <returns><see cref="SchedulerBuilder"/></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static IEnumerable<SchedulerBuilder> ScanToBuilders(this IEnumerable<Type> jobTypes)
+    public static SchedulerBuilder[] ScanToBuilders(this IEnumerable<Type> jobTypes)
     {
-        return jobTypes.Where(t => t.IsJobType()).Select(t => t.ScanToBuilder());
+        return jobTypes.Where(t => t.IsJobType()).Select(t => t.ScanToBuilder()).ToArray();
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public static class ScheduleExtensions
         // 扫描触发器构建器
         var triggerBuilders = jobType.ScanTriggers();
 
-        // 检查类型是否贴有 [JobBuilder] 特性
+        // 检查类型是否贴有 [JobDetail] 特性
         if (!jobType.IsDefined(typeof(JobDetailAttribute), true))
         {
             return SchedulerBuilder.Create(JobBuilder.Create(jobType), triggerBuilders);
@@ -158,14 +158,20 @@ public static class ScheduleExtensions
         var constructors = targetType.GetConstructors(bindFlags);
         target ??= constructors.Length == 0 ? Activator.CreateInstance<TTarget>() : constructors[0].Invoke(null);
 
+        // 获取目标类型所有属性
         var targetProperties = targetType.GetProperties(bindFlags);
+
+        // 支持对象和 Dictionary<string, object> 类型
+        var sourcePropertyValues = source is Dictionary<string, object> sourceDic
+            ? sourceDic
+            : sourceType.GetProperties(bindFlags)
+                        .ToDictionary(u => u.Name, u => u.GetValue(source));
 
         // 遍历实例属性并设置
         foreach (var property in targetProperties)
         {
-            var propertyName = property.Name;
-
             // 多种属性命名解析
+            var propertyName = property.Name;
             var camelCasePropertyName = Penetrates.GetNaming(propertyName, NamingConventions.CamelCase);
             var pascalPropertyName = Penetrates.GetNaming(propertyName, NamingConventions.Pascal);
             var underScoreCasePropertyName = Penetrates.GetNaming(propertyName, NamingConventions.UnderScoreCase);
@@ -182,29 +188,13 @@ public static class ScheduleExtensions
                 }
             }
 
-            // 下面代码使用 ”套娃“ 方式~~
-            var sourceProperty = sourceType.GetProperty(propertyName, bindFlags);
-            if (sourceProperty == null)
-            {
-                // 查找 CamelCase 属性命名
-                sourceProperty = sourceType.GetProperty(camelCasePropertyName, bindFlags);
-                if (sourceProperty == null)
-                {
-                    // 查找 Pascal 属性命名
-                    sourceProperty = sourceType.GetProperty(pascalPropertyName, bindFlags);
-                    if (sourceProperty == null)
-                    {
-                        // 查找 UnderScoreCase 属性命名
-                        sourceProperty = sourceType.GetProperty(underScoreCasePropertyName, bindFlags);
-                        if (sourceProperty == null)
-                        {
-                            continue;
-                        }
-                    }
-                }
-            }
-
-            var value = sourceProperty.GetValue(source);
+            // 穷举方式获取值
+            object value;
+            if (sourcePropertyValues.ContainsKey(propertyName)) value = sourcePropertyValues[propertyName];
+            else if (sourcePropertyValues.ContainsKey(camelCasePropertyName)) value = sourcePropertyValues[camelCasePropertyName];
+            else if (sourcePropertyValues.ContainsKey(pascalPropertyName)) value = sourcePropertyValues[pascalPropertyName];
+            else if (sourcePropertyValues.ContainsKey(underScoreCasePropertyName)) value = sourcePropertyValues[underScoreCasePropertyName];
+            else continue;
 
             // 忽略空值控制
             if (ignoreNullValue && value == null) continue;
@@ -213,5 +203,38 @@ public static class ScheduleExtensions
         }
 
         return target as TTarget;
+    }
+
+    /// <summary>
+    /// 将时间输出 Unspecified 格式字符串
+    /// </summary>
+    /// <param name="dateTime"><see cref="DateTime"/></param>
+    /// <returns><see cref="string"/></returns>
+    internal static string ToUnspecifiedString(this DateTime dateTime)
+    {
+        return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
+    }
+
+    /// <summary>
+    /// 将时间输出 Unspecified 格式字符串
+    /// </summary>
+    /// <param name="dateTime"><see cref="DateTime"/></param>
+    /// <returns><see cref="string"/></returns>
+    internal static string ToUnspecifiedString(this DateTime? dateTime)
+    {
+        return dateTime?.ToUnspecifiedString();
+    }
+
+    /// <summary>
+    /// 字符串长度裁剪（不准确）
+    /// </summary>
+    /// <param name="str"><see cref="string"/></param>
+    /// <param name="maxLength">长度，默认值 6</param>
+    /// <returns><see cref="string"/></returns>
+    internal static string GetMaxLengthString(this string str, int maxLength = 6)
+    {
+        if (str == null) return default;
+
+        return str.Length > maxLength ? str[..maxLength] + "..." : str;
     }
 }

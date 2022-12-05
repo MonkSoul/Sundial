@@ -20,46 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using TimeCrontab;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Sundial;
 
 /// <summary>
-/// Cron 表达式 Macro 作业触发器
+/// DateTime 类型序列化/反序列化处理
 /// </summary>
-public sealed class MacroAtTrigger : Trigger
+internal sealed class DateTimeJsonConverter : JsonConverter<DateTime>
 {
     /// <summary>
-    /// 构造函数
+    /// 反序列化
     /// </summary>
-    /// <param name="macro">Macro 符号</param>
-    /// <param name="fields">字段值</param>
-    public MacroAtTrigger(string macro, params object[] fields)
-    {
-        Crontab = Crontab.ParseAt(macro, fields);
-    }
-
-    /// <summary>
-    /// <see cref="Crontab"/> 对象
-    /// </summary>
-    private Crontab Crontab { get; }
-
-    /// <summary>
-    /// 计算下一个触发时间
-    /// </summary>
-    /// <param name="startAt">起始时间</param>
+    /// <param name="reader"><see cref="Utf8JsonReader"/></param>
+    /// <param name="typeToConvert">需要转换的类型</param>
+    /// <param name="options">序列化配置选项</param>
     /// <returns><see cref="DateTime"/></returns>
-    public override DateTime GetNextOccurrence(DateTime startAt)
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return Crontab.GetNextOccurrence(startAt);
+        return DateTime.Parse(reader.GetString() ?? string.Empty);
     }
 
     /// <summary>
-    /// 作业触发器转字符串输出
+    /// 序列化
     /// </summary>
-    /// <returns><see cref="string"/></returns>
-    public override string ToString()
+    /// <param name="writer"><see cref="Utf8JsonWriter"/></param>
+    /// <param name="value"><see cref="DateTime"/></param>
+    /// <param name="options">序列化配置选项</param>
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
-        return $"<{JobId} {TriggerId}> {Crontab}{(string.IsNullOrWhiteSpace(Description) ? string.Empty : $" {Description}")}";
+        writer.WriteStringValue(value.ToString());
     }
 }
