@@ -67,47 +67,29 @@ public class MyJob : IJob
 ```cs
 services.AddSchedule(options =>
 {
-    options.AddJob<MyJob>(Triggers.Minutely()   // 每分钟开始
-     , Triggers.Period(5000)   // 每 5 秒，还支持 Triggers.PeriodSeconds(5)，Triggers.PeriodMinutes(5)，Triggers.PeriodHours(5)
-     , Triggers.Cron("3,7,8 * * * * ?", CronStringFormat.WithSeconds));  // 每分钟第 3/7/8 秒
+    options.AddJob<MyJob>(Triggers.PeriodSeconds(5));
 });
 ```
 
 3. 运行项目：
 
 ```bash
-info: 2022-12-02 17:18:53.3593518 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+info: 2022-12-05 19:32:56.3835407 +08:00 星期一 L System.Logging.ScheduleService[0] #1
       Schedule hosted service is running.
-info: 2022-12-02 17:18:53.3663583 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+info: 2022-12-05 19:32:56.3913451 +08:00 星期一 L System.Logging.ScheduleService[0] #1
       Schedule hosted service is preloading...
-info: 2022-12-02 17:18:54.0381456 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+info: 2022-12-05 19:32:56.4322887 +08:00 星期一 L System.Logging.ScheduleService[0] #1
       The <job1_trigger1> trigger for scheduler of <job1> successfully appended to the schedule.
-info: 2022-12-02 17:18:54.0708796 +08:00 星期五 L System.Logging.ScheduleService[0] #1
-      The <job1_trigger2> trigger for scheduler of <job1> successfully appended to the schedule.
-info: 2022-12-02 17:18:54.0770193 +08:00 星期五 L System.Logging.ScheduleService[0] #1
-      The <job1_trigger3> trigger for scheduler of <job1> successfully appended to the schedule.
-info: 2022-12-02 17:18:54.0800017 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+info: 2022-12-05 19:32:56.4347959 +08:00 星期一 L System.Logging.ScheduleService[0] #1
       The scheduler of <job1> successfully appended to the schedule.
-warn: 2022-12-02 17:18:54.1206816 +08:00 星期五 L System.Logging.ScheduleService[0] #1
+warn: 2022-12-05 19:32:56.4504555 +08:00 星期一 L System.Logging.ScheduleService[0] #1
       Schedule hosted service preload completed, and a total of <1> schedulers are appended.
-info: 2022-12-02 17:18:59.0040452 +08:00 星期五 L MyJob[0] #9
-      <job1> [C] <job1 job1_trigger2> 5000ms 1ts 2022-12-02 17:18:58.927 -> 2022-12-02 17:19:03.944
-info: 2022-12-02 17:19:00.0440142 +08:00 星期五 L MyJob[0] #15
-      <job1> [C] <job1 job1_trigger1> * * * * * 1ts 2022-12-02 17:19:00.000 -> 2022-12-02 17:20:00.000
-info: 2022-12-02 17:19:03.0149075 +08:00 星期五 L MyJob[0] #6
-      <job1> [C] <job1 job1_trigger3> 3,7,8 * * * * ? 1ts 2022-12-02 17:19:03.000 -> 2022-12-02 17:19:07.000
-info: 2022-12-02 17:19:03.9519350 +08:00 星期五 L MyJob[0] #15
-      <job1> [C] <job1 job1_trigger2> 5000ms 2ts 2022-12-02 17:19:03.944 -> 2022-12-02 17:19:08.919
-info: 2022-12-02 17:19:07.0116797 +08:00 星期五 L MyJob[0] #4
-      <job1> [C] <job1 job1_trigger3> 3,7,8 * * * * ? 2ts 2022-12-02 17:19:07.000 -> 2022-12-02 17:19:08.000
-info: 2022-12-02 17:19:08.0078132 +08:00 星期五 L MyJob[0] #15
-      <job1> [C] <job1 job1_trigger3> 3,7,8 * * * * ? 3ts 2022-12-02 17:19:08.000 -> 2022-12-02 17:20:03.000
-info: 2022-12-02 17:19:08.9298393 +08:00 星期五 L MyJob[0] #14
-      <job1> [C] <job1 job1_trigger2> 5000ms 3ts 2022-12-02 17:19:08.919 -> 2022-12-02 17:19:13.897
-info: 2022-12-02 17:19:13.9056247 +08:00 星期五 L MyJob[0] #8
-      <job1> [C] <job1 job1_trigger2> 5000ms 4ts 2022-12-02 17:19:13.897 -> 2022-12-02 17:19:18.872
-info: 2022-12-02 17:19:18.8791123 +08:00 星期五 L MyJob[0] #12
-      <job1> [C] <job1 job1_trigger2> 5000ms 5ts 2022-12-02 17:19:18.872 -> 2022-12-02 17:19:23.846
+info: 2022-12-05 19:33:01.5100177 +08:00 星期一 L MyJob[0] #13
+      <job1> [C] <job1 job1_trigger1> 5s 1ts 2022-12-05 19:33:01.395 -> 2022-12-05 19:33:06.428
+info: 2022-12-05 19:33:06.4676792 +08:00 星期一 L MyJob[0] #13
+      <job1> [C] <job1 job1_trigger1> 5s 2ts 2022-12-05 19:33:06.428 -> 2022-12-05 19:33:11.435
+info: 2022-12-05 19:33:11.4460946 +08:00 星期一 L MyJob[0] #16
+      <job1> [C] <job1 job1_trigger1> 5s 3ts 2022-12-05 19:33:11.435 -> 2022-12-05 19:33:16.412
 ```
 
 `JobExecutionContext` 重写了 `ToString()` 方法并提供以下几种格式：
