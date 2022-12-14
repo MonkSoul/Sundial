@@ -11,7 +11,7 @@ public class MyJob : IJob
 
     public async Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
-        _logger.LogInformation($"{context.JobDetail}  {context.Trigger} {context.OccurrenceTime}");
+        _logger.LogInformation($"{context}");
         await Task.CompletedTask;
     }
 }
