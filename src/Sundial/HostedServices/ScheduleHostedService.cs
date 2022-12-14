@@ -22,6 +22,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Sundial;
 
@@ -166,6 +167,7 @@ internal sealed class ScheduleHostedService : BackgroundService
             var jobId = scheduler.JobId;
             var jobDetail = scheduler.JobDetail;
             var jobHandler = scheduler.JobHandler;
+            var jobLogger = scheduler.JobLogger;
             var triggersThatShouldRun = scheduler.Triggers;
 
             // 逐条遍历所有符合触发的作业触发器
@@ -283,6 +285,16 @@ internal sealed class ScheduleHostedService : BackgroundService
 
                             // 将作业信息运行数据写入持久化
                             _schedulerFactory.Shorthand(jobDetail);
+
+                            // 写入作业执行详细日志
+                            if (executionException == null)
+                            {
+                                jobLogger?.LogInformation("{jobExecutingContext}", jobExecutingContext);
+                            }
+                            else
+                            {
+                                jobLogger?.LogError(executionException, "{jobExecutingContext}", jobExecutingContext);
+                            }
                         }
                     }, stoppingToken);
                 });
