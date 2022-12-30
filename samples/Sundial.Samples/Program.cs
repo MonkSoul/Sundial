@@ -1,15 +1,19 @@
 using Sundial;
 using Sundial.Samples;
+using TimeCrontab;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
-    {
-        services.AddSchedule(options =>
-        {
-            options.AddJob<MyJob>(Triggers.PeriodSeconds(5)
-                , Triggers.Minutely());
-        });
-    })
-    .Build();
+var builder = WebApplication.CreateBuilder(args);
 
-await host.RunAsync();
+builder.Services.AddSchedule(options =>
+{
+    options.AddJob<MyJob>(Triggers.Minutely()
+     , Triggers.Period(5000)
+     , Triggers.Cron("3,7,8 * * * * ?", CronStringFormat.WithSeconds));
+});
+
+var app = builder.Build();
+
+app.UseStaticFiles();
+app.UseScheduleUI();
+
+app.Run();

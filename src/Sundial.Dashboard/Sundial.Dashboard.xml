@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sundial.Dashboard</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.AspNetCore.Builder.ScheduleUIExtensions">
+            <summary>
+            Schedule 模块 UI 中间件拓展
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.ScheduleUIExtensions.UseScheduleUI(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Action{Sundial.ScheduleUIOptions})">
+            <summary>
+            添加 Schedule 模块 UI 中间件
+            </summary>
+            <param name="app"><see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/></param>
+            <param name="configureAction">Schedule 模块 UI 配置选项委托</param>
+            <returns><see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/></returns>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.ScheduleUIExtensions.UseScheduleUI(Microsoft.AspNetCore.Builder.IApplicationBuilder,Sundial.ScheduleUIOptions)">
+            <summary>
+            添加 Schedule 模块 UI 中间件
+            </summary>
+            <param name="app"><see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/></param>
+            <param name="options">Schedule 模块 UI 配置选项</param>
+            <returns><see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/></returns>
+        </member>
+        <member name="T:Sundial.ScheduleUIMiddleware">
+            <summary>
+            Schedule 模块 UI 中间件
+            </summary>
+        </member>
+        <member name="F:Sundial.ScheduleUIMiddleware._next">
+            <summary>
+            请求委托
+            </summary>
+        </member>
+        <member name="F:Sundial.ScheduleUIMiddleware._schedulerFactory">
+            <summary>
+            作业计划工厂
+            </summary>
+        </member>
+        <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory,System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next">请求委托</param>
+            <param name="schedulerFactory">作业计划工厂</param>
+            <param name="rootPath">API 请求路径</param>
+        </member>
+        <member name="P:Sundial.ScheduleUIMiddleware.ApiRequestPath">
+            <summary>
+            API 请求路径
+            </summary>
+        </member>
+        <member name="M:Sundial.ScheduleUIMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            中间件执行方法
+            </summary>
+            <param name="context"><see cref="T:Microsoft.AspNetCore.Http.HttpContext"/></param>
+            <returns><see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
+        <member name="M:Sundial.ScheduleUIMiddleware.SerializeToJson(System.Object)">
+            <summary>
+            将对象输出为 JSON 字符串
+            </summary>
+            <param name="obj">对象</param>
+            <returns><see cref="T:System.String"/></returns>
+        </member>
+        <member name="T:Sundial.ScheduleUIOptions">
+            <summary>
+            Schedule UI 配置选项
+            </summary>
+        </member>
+        <member name="P:Sundial.ScheduleUIOptions.RequestPath">
+            <summary>
+            UI 地址
+            </summary>
+        </member>
+        <member name="P:Sundial.ScheduleUIOptions.EnableDirectoryBrowsing">
+            <summary>
+            启用目录浏览
+            </summary>
+        </member>
+        <member name="P:Sundial.ScheduleUIOptions.DisableOnProduction">
+            <summary>
+            生产环境关闭
+            </summary>
+            <remarks>默认 false</remarks>
+        </member>
+    </members>
+</doc>

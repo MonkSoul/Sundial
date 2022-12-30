@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Version>2.5.9</Version>
+		<Description>Sundial Dashboard 看板</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="frontend\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="frontend\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Sundial" Version="2.5.9" />
+	</ItemGroup>
+
+</Project>
