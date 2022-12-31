@@ -46,7 +46,7 @@
             </summary>
             <param name="next">请求委托</param>
             <param name="schedulerFactory">作业计划工厂</param>
-            <param name="rootPath">API 请求路径</param>
+            <param name="apiRequestPath">API 请求路径</param>
         </member>
         <member name="P:Sundial.ScheduleUIMiddleware.ApiRequestPath">
             <summary>
