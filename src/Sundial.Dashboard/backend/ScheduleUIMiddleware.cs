@@ -197,6 +197,7 @@ public sealed class ScheduleUIMiddleware
     /// <returns><see cref="string"/></returns>
     private static string SerializeToJson(object obj)
     {
+        // 初始化默认序列化选项
         var jsonSerializerOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
@@ -209,7 +210,6 @@ public sealed class ScheduleUIMiddleware
         // 处理时间类型
         var libraryAssembly = typeof(Schedular).Assembly;
         var dateTimeJsonConverter = Activator.CreateInstance(libraryAssembly.GetType($"{libraryAssembly.GetName().Name}.DateTimeJsonConverter"));
-
         jsonSerializerOptions.Converters.Add(dateTimeJsonConverter as JsonConverter);
 
         return JsonSerializer.Serialize(obj, jsonSerializerOptions);
