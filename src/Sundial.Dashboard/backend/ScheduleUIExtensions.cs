@@ -71,10 +71,13 @@ public static class ScheduleUIExtensions
             $"{options.RequestPath}/api"
         });
 
+        // 获取当前类型所在程序集
+        var currentAssembly = typeof(ScheduleUIExtensions).Assembly;
+
         // 注册嵌入式文件服务器
         app.UseFileServer(new FileServerOptions
         {
-            FileProvider = new EmbeddedFileProvider(typeof(ScheduleUIExtensions).Assembly, $"{typeof(ScheduleUIOptions).Namespace}.Dashboard.frontend"),
+            FileProvider = new EmbeddedFileProvider(currentAssembly, $"{currentAssembly.GetName().Name}.frontend"),
             RequestPath = options.RequestPath,
             EnableDirectoryBrowsing = options.EnableDirectoryBrowsing
         });
