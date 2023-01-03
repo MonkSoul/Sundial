@@ -1,6 +1,6 @@
 ﻿// MIT License
 //
-// Copyright (c) 2020-2022 百小僧, Baiqian Co.,Ltd and Contributors
+// Copyright (c) 2020-2023 百小僧, Baiqian Co.,Ltd and Contributors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -107,12 +107,16 @@ public sealed class ScheduleUIMiddleware
                 // 处理找不到作业情况
                 if (scheduleResult != ScheduleResult.Succeed)
                 {
+                    // 标识状态码为 500
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
                     // 输出 JSON
                     await context.Response.WriteAsync(SerializeToJson(new
                     {
                         msg = scheduleResult.ToString(),
                         ok = false
                     }));
+
                     return;
                 }
 
@@ -154,12 +158,16 @@ public sealed class ScheduleUIMiddleware
                 // 处理找不到作业情况
                 if (scheduleResult1 != ScheduleResult.Succeed)
                 {
+                    // 标识状态码为 500
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
                     // 输出 JSON
                     await context.Response.WriteAsync(SerializeToJson(new
                     {
                         msg = scheduleResult1.ToString(),
                         ok = false
                     }));
+
                     return;
                 }
 
@@ -177,6 +185,14 @@ public sealed class ScheduleUIMiddleware
                     case "remove":
                         scheduler1.RemoveTrigger(triggerId);
                         break;
+                    // 获取作业触发器最近运行时间
+                    case "timelines":
+                        var trigger = scheduler1?.GetTrigger(triggerId);
+                        var timelines = trigger?.GetTimelines() ?? Array.Empty<TriggerTimeline>();
+
+                        // 输出 JSON
+                        await context.Response.WriteAsync(SerializeToJson(timelines));
+                        return;
                 }
 
                 // 输出 JSON

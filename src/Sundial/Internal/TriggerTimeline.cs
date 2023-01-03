@@ -20,20 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Text.Json.Serialization;
+
 namespace Sundial;
 
 /// <summary>
-/// 小时周期（间隔）作业触发器特性
+/// 作业触发器运行记录
 /// </summary>
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public sealed class PeriodHoursAttribute : PeriodAttribute
+public sealed class TriggerTimeline
 {
     /// <summary>
-    /// 构造函数
+    /// 当前运行次数
     /// </summary>
-    /// <param name="interval">间隔（小时）</param>
-    public PeriodHoursAttribute(int interval)
-        : base(interval * 1000 * 60 * 60)
-    {
-    }
+    [JsonInclude]
+    public long NumberOfRuns { get; internal set; }
+
+    /// <summary>
+    /// 最近运行时间
+    /// </summary>
+    [JsonInclude]
+    public DateTime? LastRunTime { get; internal set; }
 }
