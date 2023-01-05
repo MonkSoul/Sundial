@@ -63,7 +63,7 @@ public partial class Trigger
     /// <returns></returns>
     public IEnumerable<TriggerTimeline> GetTimelines()
     {
-        return Timelines.OrderByDescending(u => u.LastRunTime).ToList();
+        return Timelines.OrderByDescending(u => u.CreatedTime).ToList();
     }
 
     /// <summary>
@@ -109,9 +109,6 @@ public partial class Trigger
         {
             NumberOfRuns++;
             LastRunTime = NextRunTime;
-
-            // 将最近运行时间加入队列中
-            AddToTimeline(LastRunTime.Value, NumberOfRuns);
         }
 
         NextRunTime = GetNextRunTime(startAt);
@@ -309,11 +306,9 @@ public partial class Trigger
     }
 
     /// <summary>
-    /// 记录作业触发器运行时间线
+    /// 记录作业触发器运行信息
     /// </summary>
-    /// <param name="lastRuntime">最近运行时间</param>
-    /// <param name="numberOfRuns">运行次数</param>
-    internal void AddToTimeline(DateTime lastRuntime, long numberOfRuns)
+    internal void RecordTimeline()
     {
         Timelines ??= new();
 
@@ -322,8 +317,11 @@ public partial class Trigger
 
         Timelines.Enqueue(new TriggerTimeline
         {
-            LastRunTime = lastRuntime,
-            NumberOfRuns = numberOfRuns
+            LastRunTime = LastRunTime,
+            NumberOfRuns = NumberOfRuns,
+            NextRunTime = NextRunTime,
+            Status = Status,
+            CreatedTime = DateTime.Now
         });
     }
 
