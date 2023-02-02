@@ -30,6 +30,11 @@
             Schedule 模块 UI 中间件
             </summary>
         </member>
+        <member name="F:Sundial.ScheduleUIMiddleware.REQUEST_PATH">
+            <summary>
+            固定请求路径
+            </summary>
+        </member>
         <member name="F:Sundial.ScheduleUIMiddleware._next">
             <summary>
             请求委托
@@ -40,18 +45,12 @@
             作业计划工厂
             </summary>
         </member>
-        <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory,System.String)">
+        <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory)">
             <summary>
             构造函数
             </summary>
             <param name="next">请求委托</param>
             <param name="schedulerFactory">作业计划工厂</param>
-            <param name="apiRequestPath">API 请求路径</param>
-        </member>
-        <member name="P:Sundial.ScheduleUIMiddleware.ApiRequestPath">
-            <summary>
-            API 请求路径
-            </summary>
         </member>
         <member name="M:Sundial.ScheduleUIMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
@@ -74,8 +73,9 @@
         </member>
         <member name="P:Sundial.ScheduleUIOptions.RequestPath">
             <summary>
-            UI 地址
+            UI 入口地址
             </summary>
+            <remarks>需以 / 开头，结尾不包含 / </remarks>
         </member>
         <member name="P:Sundial.ScheduleUIOptions.EnableDirectoryBrowsing">
             <summary>
