@@ -18,7 +18,7 @@
   - 支持依赖注入控制（含 HTTP 控制支持）
 - 高内聚，低耦合，使代码更简单
 - 很小，仅 `41KB`
-- 无第三方依赖，唯一依赖 [TimeCrontab](https://gitee.com/dotnetchina/TimeCrontab) 是本人作品
+- 无第三方依赖，[TimeCrontab](https://gitee.com/dotnetchina/TimeCrontab) 也是本人作品
 - 可在 `Windows/Linux/MacOS` 守护进程部署
 - 支持分布式、集群（多实例）部署
 - 支持负载均衡（基于 TCP/IP）
