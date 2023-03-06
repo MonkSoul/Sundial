@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.8.0</Version>
+		<Version>2.8.1</Version>
 		<Description>.NET 功能齐全的开源分布式作业调度系统，可从最小的应用程序到大型企业系统使用。</Description>
 	</PropertyGroup>
 
@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="TimeCrontab" Version="3.3.0" />
+		<PackageReference Include="TimeCrontab" Version="3.3.1" />
 	</ItemGroup>
 
 </Project>
