@@ -15,6 +15,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Sundial;
 
@@ -207,6 +208,9 @@ internal sealed class ScheduleHostedService : BackgroundService
                                 await Monitor.OnExecutingAsync(jobExecutingContext, stoppingToken);
                             }
 
+                            // 计时
+                            var timeOperation = Stopwatch.StartNew();
+
                             // 判断是否自定义了执行器
                             if (Executor == default)
                             {
@@ -227,6 +231,13 @@ internal sealed class ScheduleHostedService : BackgroundService
                             {
                                 await Executor.ExecuteAsync(jobExecutingContext, jobHandler, stoppingToken);
                             }
+
+                            // 计时结束
+                            timeOperation.Stop();
+                            trigger.ElapsedTime = timeOperation.ElapsedMilliseconds;
+
+                            // 同步上下文设置的 Result
+                            trigger.Result = jobExecutingContext.Result;
 
                             // 设置作业触发器状态为就绪状态
                             if (trigger.CheckAndFixNextOccurrence(jobDetail)) trigger.SetStatus(TriggerStatus.Ready);
@@ -272,7 +283,8 @@ internal sealed class ScheduleHostedService : BackgroundService
                                 var jobExecutedContext = new JobExecutedContext(jobDetail, trigger, occurrenceTime, runId)
                                 {
                                     ExecutedTime = Penetrates.GetNowTime(UseUtcTimestamp),
-                                    Exception = executionException
+                                    Exception = executionException,
+                                    Result = jobExecutingContext.Result
                                 };
 
                                 await Monitor.OnExecutedAsync(jobExecutedContext, stoppingToken);

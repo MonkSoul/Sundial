@@ -304,8 +304,8 @@ public partial class Trigger
     {
         Timelines ??= new();
 
-        // 只保留十条记录
-        if (Timelines.Count >= 10) Timelines.Dequeue();
+        // 只保留 5 条记录
+        if (Timelines.Count >= 5) Timelines.Dequeue();
 
         Timelines.Enqueue(new TriggerTimeline
         {
@@ -313,6 +313,8 @@ public partial class Trigger
             NumberOfRuns = NumberOfRuns,
             NextRunTime = NextRunTime,
             Status = Status,
+            Result = Result,
+            ElapsedTime = ElapsedTime,
             CreatedTime = DateTime.Now
         });
     }
@@ -356,6 +358,8 @@ public partial class Trigger
             , Penetrates.GetNaming(nameof(StartNow), naming)
             , Penetrates.GetNaming(nameof(RunOnStart), naming)
             , Penetrates.GetNaming(nameof(ResetOnlyOnce), naming)
+            , Penetrates.GetNaming(nameof(Result), naming)
+            , Penetrates.GetNaming(nameof(ElapsedTime), naming)
             , Penetrates.GetNaming(nameof(UpdatedTime), naming)
         };
         _ = _namingColumnNames.TryAdd(naming, nameColumnNames);
@@ -444,7 +448,9 @@ public partial class Trigger
     {columnNames[17]},
     {columnNames[18]},
     {columnNames[19]},
-    {columnNames[20]}
+    {columnNames[20]},
+    {columnNames[21]},
+    {columnNames[22]}
 )
 VALUES(
     {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)},
@@ -467,6 +473,8 @@ VALUES(
     {Penetrates.GetBooleanSqlValue(StartNow)},
     {Penetrates.GetBooleanSqlValue(RunOnStart)},
     {Penetrates.GetBooleanSqlValue(ResetOnlyOnce)},
+    {Penetrates.GetNoNumberSqlValueOrNull(Result)},
+    {ElapsedTime},
     {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
 );";
     }
@@ -504,7 +512,9 @@ SET
     {columnNames[17]} = {Penetrates.GetBooleanSqlValue(StartNow)},
     {columnNames[18]} = {Penetrates.GetBooleanSqlValue(RunOnStart)},
     {columnNames[19]} = {Penetrates.GetBooleanSqlValue(ResetOnlyOnce)},
-    {columnNames[20]} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
+    {columnNames[20]} = {Penetrates.GetNoNumberSqlValueOrNull(Result)},
+    {columnNames[21]} = {ElapsedTime},
+    {columnNames[22]} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
 WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {columnNames[1]} = {Penetrates.GetNoNumberSqlValueOrNull(JobId)};";
     }
 
@@ -554,6 +564,8 @@ WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {
             writer.WriteBoolean(Penetrates.GetNaming(nameof(StartNow), naming), StartNow);
             writer.WriteBoolean(Penetrates.GetNaming(nameof(RunOnStart), naming), RunOnStart);
             writer.WriteBoolean(Penetrates.GetNaming(nameof(ResetOnlyOnce), naming), ResetOnlyOnce);
+            writer.WriteString(Penetrates.GetNaming(nameof(Result), naming), Result);
+            writer.WriteNumber(Penetrates.GetNaming(nameof(ElapsedTime), naming), ElapsedTime);
             writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime.ToUnspecifiedString());
 
             writer.WriteEndObject();
@@ -589,6 +601,8 @@ WHERE {columnNames[0]} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {
             , $"##{Penetrates.GetNaming(nameof(StartNow), naming)}## {StartNow}"
             , $"##{Penetrates.GetNaming(nameof(RunOnStart), naming)}## {RunOnStart}"
             , $"##{Penetrates.GetNaming(nameof(ResetOnlyOnce), naming)}## {ResetOnlyOnce}"
+            , $"##{Penetrates.GetNaming(nameof(Result), naming)}## {Result}"
+            , $"##{Penetrates.GetNaming(nameof(ElapsedTime), naming)}## {ElapsedTime}"
             , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime.ToUnspecifiedString()}"
         });
     }
