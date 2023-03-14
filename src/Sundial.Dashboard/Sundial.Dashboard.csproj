@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.8.5</Version>
+		<Version>2.8.6</Version>
 		<Description>Sundial Dashboard 看板</Description>
 	</PropertyGroup>
 
@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Sundial" Version="2.8.5" />
+		<PackageReference Include="Sundial" Version="2.8.6" />
 	</ItemGroup>
 
 </Project>

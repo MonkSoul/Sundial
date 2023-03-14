@@ -270,6 +270,7 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
                 return;
             }
             catch (InvalidOperationException) { }
+            catch { }
         }
     }
 
