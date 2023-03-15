@@ -109,8 +109,7 @@ public sealed class ScheduleUIMiddleware
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
                     // 输出 JSON
-                    await context.Response.WriteAsync(SerializeToJson(new
-                    {
+                    await context.Response.WriteAsync(SerializeToJson(new {
                         msg = scheduleResult.ToString(),
                         ok = false
                     }));
@@ -132,11 +131,14 @@ public sealed class ScheduleUIMiddleware
                     case "remove":
                         _schedulerFactory.RemoveJob(jobId);
                         break;
+                    // 立即执行
+                    case "run":
+                        _schedulerFactory.RunJob(jobId);
+                        break;
                 }
 
                 // 输出 JSON
-                await context.Response.WriteAsync(SerializeToJson(new
-                {
+                await context.Response.WriteAsync(SerializeToJson(new {
                     msg = ScheduleResult.Succeed.ToString(),
                     ok = true
                 }));
@@ -160,8 +162,7 @@ public sealed class ScheduleUIMiddleware
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
                     // 输出 JSON
-                    await context.Response.WriteAsync(SerializeToJson(new
-                    {
+                    await context.Response.WriteAsync(SerializeToJson(new {
                         msg = scheduleResult1.ToString(),
                         ok = false
                     }));
@@ -194,8 +195,7 @@ public sealed class ScheduleUIMiddleware
                 }
 
                 // 输出 JSON
-                await context.Response.WriteAsync(SerializeToJson(new
-                {
+                await context.Response.WriteAsync(SerializeToJson(new {
                     msg = ScheduleResult.Succeed.ToString(),
                     ok = true
                 }));
