@@ -20,7 +20,7 @@ namespace Sundial;
 /// <summary>
 /// 作业触发器构建器
 /// </summary>
-public sealed class TriggerBuilder : Trigger
+public sealed partial class TriggerBuilder : Trigger
 {
     /// <summary>
     /// 构造函数
