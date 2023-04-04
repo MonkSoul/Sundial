@@ -43,7 +43,7 @@ public sealed class ScheduleUIMiddleware
     /// </summary>
     /// <param name="next">请求委托</param>
     /// <param name="schedulerFactory">作业计划工厂</param>
-    /// <param name="requestPath"></param>
+    /// <param name="requestPath">UI 入口地址</param>
     public ScheduleUIMiddleware(RequestDelegate next
         , ISchedulerFactory schedulerFactory
         , string requestPath)
@@ -101,11 +101,13 @@ public sealed class ScheduleUIMiddleware
             using (var stream = new MemoryStream(buffer))
             {
                 using var streamReader = new StreamReader(stream, new UTF8Encoding(false));
-                content = streamReader.ReadToEnd();
+                content = streamReader.ReadToEnd()
+                                      .Replace("%(RequestPath)", RequestPath);
             }
 
+            // 输出到客户端
             context.Response.ContentType = $"text/javascript; charset=utf-8";
-            await context.Response.WriteAsync(content.Replace("%(RequestPath)", RequestPath));
+            await context.Response.WriteAsync(content);
             return;
         }
 
