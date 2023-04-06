@@ -93,7 +93,7 @@ public sealed class ScheduleUIMiddleware
             using (var readStream = currentAssembly.GetManifestResourceStream($"{currentAssembly.GetName().Name}.frontend.apiconfig.js"))
             {
                 buffer = new byte[readStream.Length];
-                readStream.Read(buffer, 0, buffer.Length);
+                await readStream.ReadAsync(buffer);
             }
 
             // 替换配置占位符
@@ -101,8 +101,8 @@ public sealed class ScheduleUIMiddleware
             using (var stream = new MemoryStream(buffer))
             {
                 using var streamReader = new StreamReader(stream, new UTF8Encoding(false));
-                content = streamReader.ReadToEnd()
-                                      .Replace("%(RequestPath)", RequestPath);
+                content = (await streamReader.ReadToEndAsync())
+                                             .Replace("%(RequestPath)", RequestPath);
             }
 
             // 输出到客户端
