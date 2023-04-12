@@ -40,13 +40,14 @@
             作业计划工厂
             </summary>
         </member>
-        <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory,System.String)">
+        <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory,System.String,System.Int32)">
             <summary>
             构造函数
             </summary>
             <param name="next">请求委托</param>
             <param name="schedulerFactory">作业计划工厂</param>
             <param name="requestPath">UI 入口地址</param>
+            <param name="syncRate">看板刷新频次（毫秒）</param>
         </member>
         <member name="P:Sundial.ScheduleUIMiddleware.RequestPath">
             <summary>
@@ -56,6 +57,11 @@
         <member name="P:Sundial.ScheduleUIMiddleware.ApiRequestPath">
             <summary>
             API 入口地址
+            </summary>
+        </member>
+        <member name="P:Sundial.ScheduleUIMiddleware.SyncRate">
+            <summary>
+            看板刷新频次（毫秒）
             </summary>
         </member>
         <member name="M:Sundial.ScheduleUIMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
@@ -93,6 +99,11 @@
             生产环境关闭
             </summary>
             <remarks>默认 false</remarks>
+        </member>
+        <member name="P:Sundial.ScheduleUIOptions.SyncRate">
+            <summary>
+            看板刷新频次（毫秒）
+            </summary>
         </member>
     </members>
 </doc>
