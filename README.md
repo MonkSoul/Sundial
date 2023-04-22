@@ -14,7 +14,7 @@ dotnet add package Sundial
 
 ## 快速入门
 
-我们在[主页](./samples)上有不少例子，这是让您入门的第一个：
+我们在[主页](https://furion.baiqian.ltd/docs/job/)上有不少例子，这是让您入门的第一个：
 
 1. 定义作业，并实现 `IJob` 接口：
 
@@ -29,7 +29,7 @@ public class MyJob : IJob
 
     public Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
-        _logger.LogInformation($"{context}");
+        _logger.LogInformation(context.ToString());
         return Task.CompletedTask;
     }
 }
