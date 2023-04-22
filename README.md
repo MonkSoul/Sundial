@@ -6,34 +6,7 @@
 
 ![Sundial.drawio](https://gitee.com/dotnetchina/Sundial/raw/master/drawio/Sundial.drawio.png "Sundial.drawio.png")
 
-## 特性
-
-- 简化调度作业
-  - 支持作业监视器
-  - 支持作业执行器
-  - 支持自定义作业存储组件（持久化）
-  - 支持自定义策略执行
-  - 内置周期、Cron 作业
-  - 支持自定义作业触发器
-  - 支持依赖注入控制（含 HTTP 控制支持）
-- 高内聚，低耦合，使代码更简单
-- 很小，仅 `41KB`
-- 无第三方依赖，[TimeCrontab](https://gitee.com/dotnetchina/TimeCrontab) 也是本人作品
-- 可在 `Windows/Linux/MacOS` 守护进程部署
-- 支持分布式、集群（多实例）部署
-- 支持负载均衡（基于 TCP/IP）
-- 高质量代码和良好单元测试
-- 跨平台，支持 .NET5+
-
 ## 安装
-
-- [Package Manager](https://www.nuget.org/packages/Sundial)
-
-```powershell
-Install-Package Sundial
-```
-
-- [.NET CLI](https://www.nuget.org/packages/Sundial)
 
 ```powershell
 dotnet add package Sundial
@@ -67,13 +40,13 @@ public class MyJob : IJob
 ```cs
 services.AddSchedule(options =>
 {
-    options.AddJob<MyJob>(Triggers.PeriodSeconds(5));
+    options.AddJob<MyJob>(Triggers.PeriodSeconds(5)); // 5s 执行一次
 });
 ```
 
 3. 运行项目：
 
-```bash
+```diff
 info: 2022-12-05 19:32:56.3835407 +08:00 星期一 L System.Logging.ScheduleService[0] #1
       Schedule hosted service is running.
 info: 2022-12-05 19:32:56.3913451 +08:00 星期一 L System.Logging.ScheduleService[0] #1
@@ -85,11 +58,11 @@ info: 2022-12-05 19:32:56.4347959 +08:00 星期一 L System.Logging.ScheduleServ
 warn: 2022-12-05 19:32:56.4504555 +08:00 星期一 L System.Logging.ScheduleService[0] #1
       Schedule hosted service preload completed, and a total of <1> schedulers are appended.
 info: 2022-12-05 19:33:01.5100177 +08:00 星期一 L MyJob[0] #13
-      <job1> [C] <job1 job1_trigger1> 5s 1ts 2022-12-05 19:33:01.395 -> 2022-12-05 19:33:06.428
++     <job1> [C] <job1 job1_trigger1> 5s 1ts 2022-12-05 19:33:01.395 -> 2022-12-05 19:33:06.428
 info: 2022-12-05 19:33:06.4676792 +08:00 星期一 L MyJob[0] #13
-      <job1> [C] <job1 job1_trigger1> 5s 2ts 2022-12-05 19:33:06.428 -> 2022-12-05 19:33:11.435
++     <job1> [C] <job1 job1_trigger1> 5s 2ts 2022-12-05 19:33:06.428 -> 2022-12-05 19:33:11.435
 info: 2022-12-05 19:33:11.4460946 +08:00 星期一 L MyJob[0] #16
-      <job1> [C] <job1 job1_trigger1> 5s 3ts 2022-12-05 19:33:11.435 -> 2022-12-05 19:33:16.412
++     <job1> [C] <job1 job1_trigger1> 5s 3ts 2022-12-05 19:33:11.435 -> 2022-12-05 19:33:16.412
 ```
 
 `JobExecutionContext` 重写了 `ToString()` 方法并提供以下几种格式：
