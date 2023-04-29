@@ -12,7 +12,6 @@
 // 在任何情况下，作者或版权持有人都不对任何索赔、损害或其他责任负责，无论这些追责来自合同、侵权或其它行为中，
 // 还是产生于、源于或有关于本软件以及本软件的使用或其它处置。
 
-using System.Reflection;
 using TimeCrontab;
 
 namespace Sundial;
@@ -245,7 +244,7 @@ public sealed partial class TriggerBuilder : Trigger
             && !string.IsNullOrWhiteSpace(triggerTypeFullName))
         {
             // 加载 GAC 全局应用程序缓存中的程序集及类型
-            var triggerType = Assembly.Load(assemblyName)
+            var triggerType = Penetrates.LoadAssembly(assemblyName)
                 .GetType(triggerTypeFullName);
 
             return SetTriggerType(triggerType);

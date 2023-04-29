@@ -1,14 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.10.4</Version>
+		<Version>2.11</Version>
 		<Description>.NET 功能齐全的开源分布式作业调度系统，可从最小的应用程序到大型企业系统使用。</Description>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
 		<PackageReference Include="System.Text.Json" Version="6.0.0" />
 	</ItemGroup>
 
@@ -16,6 +18,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
 		<PackageReference Include="System.Text.Json" Version="6.0.0" />
 	</ItemGroup>
 
@@ -23,6 +26,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
 		<PackageReference Include="System.Text.Json" Version="7.0.0" />
 	</ItemGroup>
 
@@ -30,6 +34,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0-preview.3.23174.8" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-preview.3.23174.8" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0-preview.3.23174.8" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
 		<PackageReference Include="System.Text.Json" Version="8.0.0-preview.3.23174.8" />
 	</ItemGroup>
 
