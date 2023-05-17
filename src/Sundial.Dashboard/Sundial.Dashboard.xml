@@ -40,28 +40,22 @@
             作业计划工厂
             </summary>
         </member>
-        <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory,System.String,System.Int32)">
+        <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory,Sundial.ScheduleUIOptions)">
             <summary>
             构造函数
             </summary>
             <param name="next">请求委托</param>
             <param name="schedulerFactory">作业计划工厂</param>
-            <param name="requestPath">UI 入口地址</param>
-            <param name="syncRate">看板刷新频次（毫秒）</param>
+            <param name="options">UI 配置选项</param>
         </member>
-        <member name="P:Sundial.ScheduleUIMiddleware.RequestPath">
+        <member name="P:Sundial.ScheduleUIMiddleware.Options">
             <summary>
-            UI 入口地址
+            UI 配置选项
             </summary>
         </member>
         <member name="P:Sundial.ScheduleUIMiddleware.ApiRequestPath">
             <summary>
             API 入口地址
-            </summary>
-        </member>
-        <member name="P:Sundial.ScheduleUIMiddleware.SyncRate">
-            <summary>
-            看板刷新频次（毫秒）
             </summary>
         </member>
         <member name="M:Sundial.ScheduleUIMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
@@ -104,6 +98,12 @@
             <summary>
             看板刷新频次（毫秒）
             </summary>
+        </member>
+        <member name="P:Sundial.ScheduleUIOptions.VirtualPath">
+            <summary>
+            二级虚拟目录
+            </summary>
+            <remarks>需以 / 开头，结尾不包含 / </remarks>
         </member>
     </members>
 </doc>
