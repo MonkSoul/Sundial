@@ -69,7 +69,7 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
     /// 不受控的作业 Id 集合
     /// </summary>
     /// <remarks>用于实现 立即执行 的作业</remarks>
-    private readonly IList<string> _manualRunJobIds;
+    private readonly List<string> _manualRunJobIds;
 
     /// <summary>
     /// 构造函数
@@ -237,12 +237,20 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
         var sleepMilliseconds = GetSleepMilliseconds(startAt);
         var delay = sleepMilliseconds != null
             ? sleepMilliseconds.Value
-            : -1;   // -1 标识无穷值休眠
+            : int.MaxValue;   // 约 24.8 天
 
         try
         {
             // 进入休眠状态
-            await Task.Delay(TimeSpan.FromMilliseconds(delay), _sleepCancellationTokenSource.Token);
+            var delayTasks = new List<Task>();
+            while (delay > 0)
+            {
+                delayTasks.Add(Task.Delay(TimeSpan.FromMilliseconds(Math.Min(int.MaxValue, delay)), _sleepCancellationTokenSource.Token));
+                delay -= int.MaxValue;
+            }
+
+            await Task.WhenAll(delayTasks);
+            delayTasks.Clear();
         }
         catch
         {
