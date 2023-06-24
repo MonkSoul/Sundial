@@ -14,6 +14,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -41,7 +42,7 @@ public sealed class ScheduleUIMiddleware
     /// <summary>
     /// 作业计划变更队列
     /// </summary>
-    private readonly Queue<JobDetail> _queue;
+    private readonly BlockingCollection<JobDetail> _queue;
 
     /// <summary>
     /// 构造函数
@@ -56,13 +57,6 @@ public sealed class ScheduleUIMiddleware
         _next = next;
         _queue = new();
         _schedulerFactory = schedulerFactory;
-
-        // 监听作业计划变化
-        _schedulerFactory.OnChanged += (sender, args) =>
-        {
-            _queue.Enqueue(args.JobDetail);
-        };
-
         Options = options;
         ApiRequestPath = $"{options.RequestPath}/api";
     }
@@ -277,15 +271,25 @@ public sealed class ScheduleUIMiddleware
                     // 设置响应头的 content-type 为 text/event-stream
                     context.Response.ContentType = "text/event-stream";
 
-                    while (!context.RequestAborted.IsCancellationRequested && _queue.Count > 0)
+                    // 监听作业计划变化
+                    void Subscribe(object sender, SchedulerEventArgs args)
                     {
-                        // 解析作业信息
-                        var jobDetail = _queue.Dequeue();
+                        if (!_queue.IsAddingCompleted)
+                        {
+                            _queue.Add(args.JobDetail);
+                        }
+                    }
+                    _schedulerFactory.OnChanged += Subscribe;
 
+                    // 持续发送 SSE 协议数据
+                    foreach (var jobDetail in _queue.GetConsumingEnumerable())
+                    {
                         var message = "data: " + SerializeToJson(jobDetail) + "\n\n";
                         await context.Response.WriteAsync(message);
                         await context.Response.Body.FlushAsync();
                     }
+
+                    _schedulerFactory.OnChanged -= Subscribe;
                 }
                 break;
         }
