@@ -40,11 +40,6 @@
             作业计划工厂
             </summary>
         </member>
-        <member name="F:Sundial.ScheduleUIMiddleware._queue">
-            <summary>
-            作业计划变更队列
-            </summary>
-        </member>
         <member name="M:Sundial.ScheduleUIMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Sundial.ISchedulerFactory,Sundial.ScheduleUIOptions)">
             <summary>
             构造函数
