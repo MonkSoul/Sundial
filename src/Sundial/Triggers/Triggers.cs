@@ -26,7 +26,7 @@ public static class Triggers
     /// </summary>
     /// <param name="interval">间隔（毫秒）</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder Period(int interval)
+    public static TriggerBuilder Period(long interval)
     {
         return TriggerBuilder.Period(interval);
     }
@@ -36,7 +36,7 @@ public static class Triggers
     /// </summary>
     /// <param name="interval">间隔（秒）</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder PeriodSeconds(int interval)
+    public static TriggerBuilder PeriodSeconds(long interval)
     {
         return Period(interval * 1000);
     }
@@ -46,7 +46,7 @@ public static class Triggers
     /// </summary>
     /// <param name="interval">间隔（分钟）</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder PeriodMinutes(int interval)
+    public static TriggerBuilder PeriodMinutes(long interval)
     {
         return Period(interval * 1000 * 60);
     }
@@ -56,7 +56,7 @@ public static class Triggers
     /// </summary>
     /// <param name="interval">间隔（小时）</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder PeriodHours(int interval)
+    public static TriggerBuilder PeriodHours(long interval)
     {
         return Period(interval * 1000 * 60 * 60);
     }
