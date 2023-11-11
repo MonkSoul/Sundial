@@ -266,6 +266,10 @@ public sealed class ScheduleUIMiddleware
                     // 设置响应头的 content-type 为 text/event-stream
                     context.Response.ContentType = "text/event-stream";
 
+                    // 设置响应头，启用响应发送保持活动性
+                    context.Response.Headers.Add("Cache-Control", "no-cache");
+                    context.Response.Headers.Add("Connection", "keep-alive");
+
                     var queue = new BlockingCollection<JobDetail>();
 
                     // 监听作业计划变化
@@ -286,7 +290,7 @@ public sealed class ScheduleUIMiddleware
                         {
                             var message = "data: " + SerializeToJson(jobDetail) + "\n\n";
                             await context.Response.WriteAsync(message);
-                            await context.Response.Body.FlushAsync();
+                            //await context.Response.Body.FlushAsync();
                         }
                         else break;
                     }
