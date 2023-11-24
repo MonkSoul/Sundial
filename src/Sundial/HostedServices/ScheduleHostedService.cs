@@ -1,6 +1,6 @@
 ﻿// MIT 许可证
 //
-// 版权 © 2020-present 百小僧, 百签科技（广东）有限公司 和所有贡献者
+// 版权 © 2020-present 百小僧, 百签科技（广东）有限公司
 //
 // 特此免费授予任何获得本软件副本和相关文档文件（下称“软件”）的人不受限制地处置该软件的权利，
 // 包括不受限制地使用、复制、修改、合并、发布、分发、转授许可和/或出售该软件副本，
@@ -271,6 +271,9 @@ internal sealed class ScheduleHostedService : BackgroundService
 
                             // 将作业触发器运行数据写入持久化
                             _schedulerFactory.Shorthand(jobDetail, trigger);
+
+                            // 重置 Result
+                            trigger.Result = null;
 
                             // 输出异常日志
                             _logger.LogError(ex, "Error occurred executing in {jobExecutingContext}.", jobExecutingContext);
