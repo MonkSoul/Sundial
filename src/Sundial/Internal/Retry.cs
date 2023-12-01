@@ -17,7 +17,7 @@ namespace Sundial;
 /// <summary>
 /// 重试静态类
 /// </summary>
-internal sealed class Retry
+public sealed class Retry
 {
     /// <summary>
     /// 重试有异常的方法，还可以指定特定异常
