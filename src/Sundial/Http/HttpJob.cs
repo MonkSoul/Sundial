@@ -50,6 +50,8 @@ public class HttpJob : IJob
         // 空检查
         if (httpJobMessage == null || string.IsNullOrWhiteSpace(httpJobMessage.RequestUri))
         {
+            _logger.LogWarning("Invalid HTTP job request.");
+
             return;
         }
 

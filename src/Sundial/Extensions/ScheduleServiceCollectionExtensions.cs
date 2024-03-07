@@ -44,10 +44,7 @@ public static class ScheduleServiceCollectionExtensions
         services.AddHostedService(serviceProvider =>
         {
             // 创建作业调度器后台主机对象
-            var scheduleHostedService = ActivatorUtilities.CreateInstance<ScheduleHostedService>(
-                serviceProvider
-                , scheduleOptionsBuilder.UseUtcTimestamp
-                , scheduleOptionsBuilder.ClusterId);
+            var scheduleHostedService = ActivatorUtilities.CreateInstance<ScheduleHostedService>(serviceProvider, scheduleOptionsBuilder.ClusterId);
 
             // 订阅未察觉任务异常事件
             var unobservedTaskExceptionHandler = scheduleOptionsBuilder.UnobservedTaskExceptionHandler;
@@ -88,10 +85,7 @@ public static class ScheduleServiceCollectionExtensions
         // 注册作业计划工厂服务
         services.AddSingleton<ISchedulerFactory>(serviceProvider =>
         {
-            var schedulerFactory = ActivatorUtilities.CreateInstance<SchedulerFactory>(serviceProvider
-                , schedulerBuilders
-                , scheduleOptionsBuilder.UseUtcTimestamp);
-
+            var schedulerFactory = ActivatorUtilities.CreateInstance<SchedulerFactory>(serviceProvider, schedulerBuilders);
             return schedulerFactory;
         });
 

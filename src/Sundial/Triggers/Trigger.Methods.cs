@@ -125,7 +125,8 @@ public partial class Trigger
     internal DateTime? GetNextRunTime(DateTime startAt)
     {
         // 如果未启动或不是正常的触发器状态，则返回 null
-        if (StartNow == false || (Status != TriggerStatus.Ready
+        if (StartNow == false || (Status != TriggerStatus.Backlog
+            && Status != TriggerStatus.Ready
             && Status != TriggerStatus.ErrorToReady
             && Status != TriggerStatus.Running
             && Status != TriggerStatus.Blocked)) return null;
@@ -173,8 +174,7 @@ public partial class Trigger
     /// <returns><see cref="bool"/></returns>
     internal bool IsNormalStatus()
     {
-        var isNormalStatus = Status != TriggerStatus.Backlog
-            && Status != TriggerStatus.Pause
+        var isNormalStatus = Status != TriggerStatus.Pause
             && Status != TriggerStatus.Archived
             && Status != TriggerStatus.Panic
             && Status != TriggerStatus.Overrun
@@ -224,12 +224,10 @@ public partial class Trigger
         // 开始时间检查
         if (StartTime != null)
         {
-            var compareTime = NextRunTime != null ? NextRunTime.Value : startAt;
-            if (StartTime.Value > compareTime)
+            if (StartTime.Value > startAt)
             {
                 SetStatus(TriggerStatus.Backlog);
-                NextRunTime = null;
-                return false;
+                return true;
             }
         }
 
@@ -384,7 +382,7 @@ public partial class Trigger
     /// <summary>
     /// 获取触发器初始化时间
     /// </summary>
-    /// <param name="startAt"></param>
+    /// <param name="startAt">起始时间</param>
     /// <returns><see cref="DateTime"/> 或者 null</returns>
     private DateTime? GetStartAt(DateTime startAt)
     {
