@@ -121,7 +121,7 @@ internal sealed class ScheduleHostedService : BackgroundService
         await WaitingClusterAsync();
 
         // 作业调度器初始化
-        _schedulerFactory.Preload();
+        await _schedulerFactory.PreloadAsync(stoppingToken);
 
         // 监听服务是否取消
         while (!stoppingToken.IsCancellationRequested)
@@ -351,7 +351,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                             }
 
                             // 记录作业触发器运行信息
-                            trigger.RecordTimeline(_schedulerFactory, jobId);
+                            await trigger.RecordTimelineAsync(_schedulerFactory, jobId);
 
                             // 释放服务作用域
                             jobHandler = null;
