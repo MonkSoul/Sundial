@@ -14,7 +14,7 @@ dotnet add package Sundial
 
 ## 快速入门
 
-我们在[主页](https://furion.baiqian.ltd/docs/job/)上有不少例子，这是让您入门的第一个：
+我们在[主页](https://furion.net/docs/job/)上有不少例子，这是让您入门的第一个：
 
 1. 定义作业，并实现 `IJob` 接口：
 
@@ -75,11 +75,11 @@ info: 2022-12-05 19:33:11.4460946 +08:00 星期一 L MyJob[0] #16
 <作业Id> 作业描述 [并行C/串行S] <作业Id 触发器Id> 触发器字符串 触发器描述 触发次数ts 触发时间 [触发器终止状态]
 ```
 
-[更多文档](https://furion.baiqian.ltd/docs/job/)
+[更多文档](https://furion.net/docs/job/)
 
 ## 文档
 
-您可以在[主页](https://furion.baiqian.ltd/docs/job/)找到 Sundial 文档。
+您可以在[主页](https://furion.net/docs/job/)找到 Sundial 文档。
 
 ## 贡献
 
