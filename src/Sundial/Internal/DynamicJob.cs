@@ -7,7 +7,7 @@ namespace Sundial;
 /// <summary>
 /// 动态作业处理程序
 /// </summary>
-internal sealed class DynamicJob : IJob
+public sealed class DynamicJob : IJob
 {
     /// <summary>
     /// 具体处理逻辑
