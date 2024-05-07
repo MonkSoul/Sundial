@@ -100,5 +100,15 @@
             </summary>
             <remarks>需以 / 开头，结尾不包含 / </remarks>
         </member>
+        <member name="P:Sundial.ScheduleUIOptions.DisplayEmptyTriggerJobs">
+            <summary>
+            是否显示空触发器的作业信息
+            </summary>
+        </member>
+        <member name="P:Sundial.ScheduleUIOptions.DisplayHead">
+            <summary>
+            是否显示页头
+            </summary>
+        </member>
     </members>
 </doc>
