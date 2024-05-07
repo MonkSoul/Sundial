@@ -1210,8 +1210,9 @@ internal sealed partial class SchedulerFactory
     /// </summary>
     /// <param name="jobId">作业 Id</param>
     /// <param name="scheduler">作业计划</param>
+    /// <param name="triggerId">作业触发器 Id</param>
     /// <returns><see cref="ScheduleResult"/></returns>
-    public ScheduleResult TryCancelJob(string jobId, out IScheduler scheduler)
+    public ScheduleResult TryCancelJob(string jobId, out IScheduler scheduler, string triggerId = null)
     {
         // 查找作业
         var scheduleResult = InternalTryGetJob(jobId, out var originScheduler, true);
@@ -1221,7 +1222,7 @@ internal sealed partial class SchedulerFactory
             return scheduleResult;
         }
 
-        _jobCancellationToken.Cancel(jobId);
+        _jobCancellationToken.Cancel(jobId, triggerId);
 
         scheduler = originScheduler;
         return ScheduleResult.Succeed;
@@ -1246,10 +1247,11 @@ internal sealed partial class SchedulerFactory
     /// 取消正在执行的作业
     /// </summary>
     /// <param name="scheduler">作业计划</param>
+    /// <param name="triggerId">作业触发器 Id</param>
     /// <returns><see cref="ScheduleResult"/></returns>
-    public ScheduleResult TryCancelJob(IScheduler scheduler)
+    public ScheduleResult TryCancelJob(IScheduler scheduler, string triggerId = null)
     {
-        return TryCancelJob(scheduler?.JobId, out _);
+        return TryCancelJob(scheduler?.JobId, out _, triggerId);
     }
 
     /// <summary>

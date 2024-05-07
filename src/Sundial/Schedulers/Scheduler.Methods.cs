@@ -1,4 +1,4 @@
-﻿// 版权归百小僧及百签科技（广东）有限公司所有。
+// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -580,11 +580,12 @@ internal sealed partial class Scheduler
     }
 
     /// <summary>
-    /// 立即执行作业
+    /// 取消正在执行作业
     /// </summary>
-    public void Cancel()
+    /// <param name="triggerId">作业触发器 Id</param>
+    public void Cancel(string triggerId = null)
     {
-        Factory?.CancelJob(JobId);
+        Factory?.CancelJob(JobId, triggerId);
     }
 
     /// <summary>
@@ -592,15 +593,15 @@ internal sealed partial class Scheduler
     /// </summary>
     /// <param name="triggerId">作业触发器 Id</param>
     /// <param name="trigger">作业触发器</param>
-    /// <param name="showLog">是否显示日志</param>
+    /// <param name="outputLog">是否显示日志</param>
     /// <returns><see cref="ScheduleResult"/></returns>
-    private ScheduleResult InternalTryGetTrigger(string triggerId, out Trigger trigger, bool showLog = false)
+    private ScheduleResult InternalTryGetTrigger(string triggerId, out Trigger trigger, bool outputLog = false)
     {
         // 空检查
         if (string.IsNullOrWhiteSpace(triggerId))
         {
             // 输出日志
-            if (showLog) Logger.LogWarning("Empty identity trigger.");
+            if (outputLog) Logger.LogWarning("Empty identity trigger.");
 
             trigger = default;
             return ScheduleResult.NotIdentify;
@@ -611,7 +612,7 @@ internal sealed partial class Scheduler
         if (scheduleResult != ScheduleResult.Succeed)
         {
             // 输出日志
-            if (showLog) Logger.LogWarning("The scheduler of <{JobId}> is not found.", JobId);
+            if (outputLog) Logger.LogWarning("The scheduler of <{JobId}> is not found.", JobId);
 
             trigger = default;
             return ScheduleResult.NotFound;
@@ -623,7 +624,7 @@ internal sealed partial class Scheduler
         if (!succeed)
         {
             // 输出日志
-            if (showLog) Logger.LogWarning("The <{triggerId}> trigger for scheduler of <{JobId}> is not found.", triggerId, JobId);
+            if (outputLog) Logger.LogWarning("The <{triggerId}> trigger for scheduler of <{JobId}> is not found.", triggerId, JobId);
 
             trigger = default;
             return ScheduleResult.NotFound;
