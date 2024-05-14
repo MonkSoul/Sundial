@@ -210,7 +210,8 @@ internal sealed class ScheduleHostedService : BackgroundService
                         // 创建作业执行前上下文
                         var jobExecutingContext = new JobExecutingContext(jobDetail, trigger, occurrenceTime, runId, serviceScoped.ServiceProvider)
                         {
-                            ExecutingTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty)
+                            ExecutingTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty),
+                            Mode = trigger.Mode
                         };
 
                         // 执行异常对象
@@ -225,7 +226,10 @@ internal sealed class ScheduleHostedService : BackgroundService
                         try
                         {
                             // 创建作业处理程序实例
-                            jobHandler = _schedulerFactory.CreateJob(serviceScoped.ServiceProvider, new JobFactoryContext(jobId, jobDetail.RuntimeJobType));
+                            jobHandler = _schedulerFactory.CreateJob(serviceScoped.ServiceProvider, new JobFactoryContext(jobId, jobDetail.RuntimeJobType)
+                            {
+                                Mode = trigger.Mode
+                            });
 
                             // 调用执行前监视器
                             if (Monitor != default)
@@ -312,7 +316,8 @@ internal sealed class ScheduleHostedService : BackgroundService
                                 {
                                     ExecutedTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty),
                                     Exception = executionException,
-                                    Result = jobExecutingContext.Result
+                                    Result = jobExecutingContext.Result,
+                                    Mode = trigger.Mode
                                 };
 
                                 // 是否定义 FallbackAsync 方法
@@ -365,6 +370,9 @@ internal sealed class ScheduleHostedService : BackgroundService
 
                             // 记录作业触发器运行信息
                             await trigger.RecordTimelineAsync(_schedulerFactory, jobId);
+
+                            // 重置触发模式
+                            trigger.Mode = 0;
 
                             // 释放服务作用域
                             await ReleaseJobHandlerAsync(jobHandler);
