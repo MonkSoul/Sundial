@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.57</Version>
+		<Version>2.58</Version>
 		<Description>.NET 功能齐全的开源分布式作业调度系统，可从最小的应用程序到大型企业系统使用。</Description>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
@@ -35,10 +35,10 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0-preview.3.24172.9" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.3.24172.9" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0-preview.3.24172.9" />
-		<PackageReference Include="System.Text.Json" Version="9.0.0-preview.3.24172.9" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0-preview.4.24266.19" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.4.24266.19" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0-preview.4.24266.19" />
+		<PackageReference Include="System.Text.Json" Version="9.0.0-preview.4.24266.19" />
 	</ItemGroup>
 
 	<ItemGroup>
