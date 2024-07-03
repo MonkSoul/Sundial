@@ -9,7 +9,7 @@ namespace Sundial;
 /// <summary>
 /// 作业触发器运行记录
 /// </summary>
-public sealed class TriggerTimeline
+public sealed class TriggerTimeline : IDisposable
 {
     /// <summary>
     /// 作业 Id
@@ -71,4 +71,16 @@ public sealed class TriggerTimeline
     /// <remarks>默认为定时触发</remarks>
     [JsonInclude]
     public int Mode { get; internal set; }
+
+    /// <summary>
+    /// 异常信息
+    /// </summary>
+    [JsonInclude]
+    public string Exception { get; internal set; }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Exception = null;
+    }
 }
