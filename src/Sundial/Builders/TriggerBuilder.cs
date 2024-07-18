@@ -350,6 +350,7 @@ public sealed partial class TriggerBuilder : Trigger
     /// 设置起始时间
     /// </summary>
     /// <param name="startTime">起始时间</param>
+    /// <remarks>如果启用 UTC 时间，那么这里也要使用 UTC 时间</remarks>
     /// <returns><see cref="TriggerBuilder"/></returns>
     public TriggerBuilder SetStartTime(DateTime? startTime)
     {
@@ -362,6 +363,7 @@ public sealed partial class TriggerBuilder : Trigger
     /// 设置结束时间
     /// </summary>
     /// <param name="endTime">结束时间</param>
+    /// <remarks>如果启用 UTC 时间，那么这里也要使用 UTC 时间</remarks>
     /// <returns><see cref="TriggerBuilder"/></returns>
     public TriggerBuilder SetEndTime(DateTime? endTime)
     {
@@ -374,6 +376,7 @@ public sealed partial class TriggerBuilder : Trigger
     /// 设置最近运行时间
     /// </summary>
     /// <param name="lastRunTime">最近运行时间</param>
+    /// <remarks>如果启用 UTC 时间，那么这里也要使用 UTC 时间</remarks>
     /// <returns><see cref="TriggerBuilder"/></returns>
     public TriggerBuilder SetLastRunTime(DateTime? lastRunTime)
     {
@@ -386,6 +389,7 @@ public sealed partial class TriggerBuilder : Trigger
     /// 设置下一次运行时间
     /// </summary>
     /// <param name="nextRunTime">下一次运行时间</param>
+    /// <remarks>如果启用 UTC 时间，那么这里也要使用 UTC 时间</remarks>
     /// <returns><see cref="TriggerBuilder"/></returns>
     public TriggerBuilder SetNextRunTime(DateTime? nextRunTime)
     {
