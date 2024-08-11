@@ -2,6 +2,7 @@
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -32,6 +33,6 @@ internal sealed class DateTimeJsonConverter : JsonConverter<DateTime>
     /// <param name="options">序列化配置选项</param>
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture));
     }
 }

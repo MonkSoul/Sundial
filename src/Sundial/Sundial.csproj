@@ -1,17 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.63</Version>
+		<Version>2.64</Version>
 		<Description>.NET 功能齐全的开源分布式作业调度系统，可从最小的应用程序到大型企业系统使用。</Description>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
-
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-		<PackageReference Include="System.Text.Json" Version="6.0.0" />
-	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />

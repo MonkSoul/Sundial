@@ -252,7 +252,7 @@ VALUES(
     {Penetrates.GetBooleanSqlValue(Concurrent)},
     {Penetrates.GetBooleanSqlValue(IncludeAnnotations)},
     {Penetrates.GetNoNumberSqlValueOrNull(Properties)},
-    {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
+    {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToFormatString())}
 );";
     }
 
@@ -277,7 +277,7 @@ SET
     {Penetrates.WrapDatabaseFieldName(columnNames[5])} = {Penetrates.GetBooleanSqlValue(Concurrent)},
     {Penetrates.WrapDatabaseFieldName(columnNames[6])} = {Penetrates.GetBooleanSqlValue(IncludeAnnotations)},
     {Penetrates.WrapDatabaseFieldName(columnNames[7])} = {Penetrates.GetNoNumberSqlValueOrNull(Properties)},
-    {Penetrates.WrapDatabaseFieldName(columnNames[8])} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
+    {Penetrates.WrapDatabaseFieldName(columnNames[8])} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToFormatString())}
 WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumberSqlValueOrNull(JobId)};";
     }
 
@@ -315,7 +315,7 @@ WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumb
             writer.WriteBoolean(Penetrates.GetNaming(nameof(Concurrent), naming), Concurrent);
             writer.WriteBoolean(Penetrates.GetNaming(nameof(IncludeAnnotations), naming), IncludeAnnotations);
             writer.WriteString(Penetrates.GetNaming(nameof(Properties), naming), Properties);
-            writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime.ToUnspecifiedString());
+            writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime.ToFormatString());
 
             writer.WriteEndObject();
         });
@@ -338,7 +338,7 @@ WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumb
             , $"##{Penetrates.GetNaming(nameof(Concurrent), naming)}## {Concurrent}"
             , $"##{Penetrates.GetNaming(nameof(IncludeAnnotations), naming)}## {IncludeAnnotations}"
             , $"##{Penetrates.GetNaming(nameof(Properties), naming)}## {Properties}"
-            , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime.ToUnspecifiedString()}"
+            , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime.ToFormatString()}"
         });
     }
 }

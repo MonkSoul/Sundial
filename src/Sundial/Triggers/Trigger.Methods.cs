@@ -499,10 +499,10 @@ VALUES(
     {Penetrates.GetNoNumberSqlValueOrNull(Args)},
     {Penetrates.GetNoNumberSqlValueOrNull(Description)},
     {((int)Status)},
-    {Penetrates.GetNoNumberSqlValueOrNull(StartTime.ToUnspecifiedString())},
-    {Penetrates.GetNoNumberSqlValueOrNull(EndTime.ToUnspecifiedString())},
-    {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime.ToUnspecifiedString())},
-    {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime.ToUnspecifiedString())},
+    {Penetrates.GetNoNumberSqlValueOrNull(StartTime.ToFormatString())},
+    {Penetrates.GetNoNumberSqlValueOrNull(EndTime.ToFormatString())},
+    {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime.ToFormatString())},
+    {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime.ToFormatString())},
     {NumberOfRuns},
     {MaxNumberOfRuns},
     {NumberOfErrors},
@@ -514,7 +514,7 @@ VALUES(
     {Penetrates.GetBooleanSqlValue(ResetOnlyOnce)},
     {Penetrates.GetNoNumberSqlValueOrNull(Result)},
     {ElapsedTime},
-    {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
+    {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToFormatString())}
 );";
     }
 
@@ -538,10 +538,10 @@ SET
     {Penetrates.WrapDatabaseFieldName(columnNames[4])} = {Penetrates.GetNoNumberSqlValueOrNull(Args)},
     {Penetrates.WrapDatabaseFieldName(columnNames[5])} = {Penetrates.GetNoNumberSqlValueOrNull(Description)},
     {Penetrates.WrapDatabaseFieldName(columnNames[6])} = {((int)Status)},
-    {Penetrates.WrapDatabaseFieldName(columnNames[7])} = {Penetrates.GetNoNumberSqlValueOrNull(StartTime.ToUnspecifiedString())},
-    {Penetrates.WrapDatabaseFieldName(columnNames[8])} = {Penetrates.GetNoNumberSqlValueOrNull(EndTime.ToUnspecifiedString())},
-    {Penetrates.WrapDatabaseFieldName(columnNames[9])} = {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime.ToUnspecifiedString())},
-    {Penetrates.WrapDatabaseFieldName(columnNames[10])} = {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime.ToUnspecifiedString())},
+    {Penetrates.WrapDatabaseFieldName(columnNames[7])} = {Penetrates.GetNoNumberSqlValueOrNull(StartTime.ToFormatString())},
+    {Penetrates.WrapDatabaseFieldName(columnNames[8])} = {Penetrates.GetNoNumberSqlValueOrNull(EndTime.ToFormatString())},
+    {Penetrates.WrapDatabaseFieldName(columnNames[9])} = {Penetrates.GetNoNumberSqlValueOrNull(LastRunTime.ToFormatString())},
+    {Penetrates.WrapDatabaseFieldName(columnNames[10])} = {Penetrates.GetNoNumberSqlValueOrNull(NextRunTime.ToFormatString())},
     {Penetrates.WrapDatabaseFieldName(columnNames[11])} = {NumberOfRuns},
     {Penetrates.WrapDatabaseFieldName(columnNames[12])} = {MaxNumberOfRuns},
     {Penetrates.WrapDatabaseFieldName(columnNames[13])} = {NumberOfErrors},
@@ -553,7 +553,7 @@ SET
     {Penetrates.WrapDatabaseFieldName(columnNames[19])} = {Penetrates.GetBooleanSqlValue(ResetOnlyOnce)},
     {Penetrates.WrapDatabaseFieldName(columnNames[20])} = {Penetrates.GetNoNumberSqlValueOrNull(Result)},
     {Penetrates.WrapDatabaseFieldName(columnNames[21])} = {ElapsedTime},
-    {Penetrates.WrapDatabaseFieldName(columnNames[22])} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToUnspecifiedString())}
+    {Penetrates.WrapDatabaseFieldName(columnNames[22])} = {Penetrates.GetNoNumberSqlValueOrNull(UpdatedTime.ToFormatString())}
 WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumberSqlValueOrNull(TriggerId)} AND {Penetrates.WrapDatabaseFieldName(columnNames[1])} = {Penetrates.GetNoNumberSqlValueOrNull(JobId)};";
     }
 
@@ -590,10 +590,10 @@ WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumb
             writer.WriteString(Penetrates.GetNaming(nameof(Args), naming), Args);
             writer.WriteString(Penetrates.GetNaming(nameof(Description), naming), Description);
             writer.WriteNumber(Penetrates.GetNaming(nameof(Status), naming), (int)Status);
-            writer.WriteString(Penetrates.GetNaming(nameof(StartTime), naming), StartTime.ToUnspecifiedString());
-            writer.WriteString(Penetrates.GetNaming(nameof(EndTime), naming), EndTime.ToUnspecifiedString());
-            writer.WriteString(Penetrates.GetNaming(nameof(LastRunTime), naming), LastRunTime.ToUnspecifiedString());
-            writer.WriteString(Penetrates.GetNaming(nameof(NextRunTime), naming), NextRunTime.ToUnspecifiedString());
+            writer.WriteString(Penetrates.GetNaming(nameof(StartTime), naming), StartTime.ToFormatString());
+            writer.WriteString(Penetrates.GetNaming(nameof(EndTime), naming), EndTime.ToFormatString());
+            writer.WriteString(Penetrates.GetNaming(nameof(LastRunTime), naming), LastRunTime.ToFormatString());
+            writer.WriteString(Penetrates.GetNaming(nameof(NextRunTime), naming), NextRunTime.ToFormatString());
             writer.WriteNumber(Penetrates.GetNaming(nameof(NumberOfRuns), naming), NumberOfRuns);
             writer.WriteNumber(Penetrates.GetNaming(nameof(MaxNumberOfRuns), naming), MaxNumberOfRuns);
             writer.WriteNumber(Penetrates.GetNaming(nameof(NumberOfErrors), naming), NumberOfErrors);
@@ -605,7 +605,7 @@ WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumb
             writer.WriteBoolean(Penetrates.GetNaming(nameof(ResetOnlyOnce), naming), ResetOnlyOnce);
             writer.WriteString(Penetrates.GetNaming(nameof(Result), naming), Result);
             writer.WriteNumber(Penetrates.GetNaming(nameof(ElapsedTime), naming), ElapsedTime);
-            writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime.ToUnspecifiedString());
+            writer.WriteString(Penetrates.GetNaming(nameof(UpdatedTime), naming), UpdatedTime.ToFormatString());
 
             writer.WriteEndObject();
         });
@@ -627,10 +627,10 @@ WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumb
             , $"##{Penetrates.GetNaming(nameof(Args), naming)}## {Args}"
             , $"##{Penetrates.GetNaming(nameof(Description), naming)}## {Description}"
             , $"##{Penetrates.GetNaming(nameof(Status), naming)}## {Status}"
-            , $"##{Penetrates.GetNaming(nameof(StartTime), naming)}## {StartTime.ToUnspecifiedString()}"
-            , $"##{Penetrates.GetNaming(nameof(EndTime), naming)}## {EndTime.ToUnspecifiedString()}"
-            , $"##{Penetrates.GetNaming(nameof(LastRunTime), naming)}## {LastRunTime.ToUnspecifiedString()}"
-            , $"##{Penetrates.GetNaming(nameof(NextRunTime), naming)}## {NextRunTime.ToUnspecifiedString()}"
+            , $"##{Penetrates.GetNaming(nameof(StartTime), naming)}## {StartTime.ToFormatString()}"
+            , $"##{Penetrates.GetNaming(nameof(EndTime), naming)}## {EndTime.ToFormatString()}"
+            , $"##{Penetrates.GetNaming(nameof(LastRunTime), naming)}## {LastRunTime.ToFormatString()}"
+            , $"##{Penetrates.GetNaming(nameof(NextRunTime), naming)}## {NextRunTime.ToFormatString()}"
             , $"##{Penetrates.GetNaming(nameof(NumberOfRuns), naming)}## {NumberOfRuns}"
             , $"##{Penetrates.GetNaming(nameof(MaxNumberOfRuns), naming)}## {MaxNumberOfRuns}"
             , $"##{Penetrates.GetNaming(nameof(NumberOfErrors), naming)}## {NumberOfErrors}"
@@ -642,7 +642,7 @@ WHERE {Penetrates.WrapDatabaseFieldName(columnNames[0])} = {Penetrates.GetNoNumb
             , $"##{Penetrates.GetNaming(nameof(ResetOnlyOnce), naming)}## {ResetOnlyOnce}"
             , $"##{Penetrates.GetNaming(nameof(Result), naming)}## {Result}"
             , $"##{Penetrates.GetNaming(nameof(ElapsedTime), naming)}## {ElapsedTime}"
-            , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime.ToUnspecifiedString()}"
+            , $"##{Penetrates.GetNaming(nameof(UpdatedTime), naming)}## {UpdatedTime.ToFormatString()}"
         });
     }
 }
