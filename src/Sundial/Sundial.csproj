@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.64</Version>
+		<Version>2.65</Version>
 		<Description>.NET 功能齐全的开源分布式作业调度系统，可从最小的应用程序到大型企业系统使用。</Description>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
@@ -28,14 +28,14 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0-preview.6.24327.7" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.6.24327.7" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0-preview.6.24327.7" />
-		<PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.10.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
 		<PackageReference Include="TimeCrontab" Version="3.4.0" />
 	</ItemGroup>
 
