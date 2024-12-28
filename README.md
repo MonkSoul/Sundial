@@ -88,3 +88,5 @@ info: 2022-12-05 19:33:11.4460946 +08:00 星期一 L MyJob[0] #16
 ## 许可证
 
 Sundial 采用 [MIT](./LICENSE) 开源许可证。
+
+[![](./assets/baiqian.svg)](https://baiqian.com)
