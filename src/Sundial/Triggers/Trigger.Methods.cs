@@ -131,7 +131,7 @@ public partial class Trigger
             && Status != TriggerStatus.Running
             && Status != TriggerStatus.Blocked)) return null;
 
-        // 如果已经设置了 NextRunTime 且其值大于当前时间，则返回当前 NextRunTime（可能因为其他方式修改了改值导致触发时间不是精准计算的时间）
+        // 如果已经设置了 NextRunTime 且其值大于当前时间，则返回当前 NextRunTime（可能因为其他方式修改了该值导致触发时间不是精准计算的时间）
         if (NextRunTime != null && NextRunTime.Value > startAt) return NextRunTime;
 
         var baseTime = GetStartAt(startAt);
