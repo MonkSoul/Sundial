@@ -99,7 +99,8 @@ public sealed class ScheduleUIMiddleware
                              .Replace("%(DisplayEmptyTriggerJobs)", Options.DisplayEmptyTriggerJobs ? "true" : "false")
                              .Replace("%(DisplayHead)", Options.DisplayHead ? "true" : "false")
                              .Replace("%(DefaultExpandAllJobs)", Options.DefaultExpandAllJobs ? "true" : "false")
-                             .Replace("%(UseUtcTimestamp)", ScheduleOptionsBuilder.UseUtcTimestampProperty ? "true" : "false");
+                             .Replace("%(UseUtcTimestamp)", ScheduleOptionsBuilder.UseUtcTimestampProperty ? "true" : "false")
+                             .Replace("%(Title)", Options.Title ?? string.Empty);
             }
 
             // 输出到客户端

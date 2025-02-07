@@ -482,6 +482,8 @@ internal sealed class ScheduleHostedService : BackgroundService
     /// <returns><see cref="Task"/></returns>
     private async Task ReleaseJobHandlerAsync(IJob jobHandler)
     {
+        if (jobHandler is null) return;
+
         var isService = _serviceProviderIsService.IsService(jobHandler.GetType());
         if (isService) return;
 

@@ -21,6 +21,11 @@ public sealed class ScheduleUIOptions
     public bool EnableDirectoryBrowsing { get; set; } = false;
 
     /// <summary>
+    /// 看板标题
+    /// </summary>
+    public string Title { get; set; } = "Schedule Dashboard";
+
+    /// <summary>
     /// 生产环境关闭
     /// </summary>
     /// <remarks>默认 false</remarks>

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using System.Logging;
+using System.Reflection;
 
 namespace Sundial;
 
@@ -18,15 +19,22 @@ internal class ScheduleLogger : IScheduleLogger
     private readonly ILogger _logger;
 
     /// <summary>
+    /// 是否配置（注册）了日志程序
+    /// </summary>
+    private readonly bool _isLoggingRegistered;
+
+    /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="logger">日志对象</param>
     /// <param name="logEnabled">是否启用日志记录</param>
-    public ScheduleLogger(ILogger<ScheduleService> logger
-        , bool logEnabled)
+    /// <param name="isLoggingRegistered">是否配置（注册）了日志程序</param>
+    public ScheduleLogger(ILogger<ScheduleService> logger, bool logEnabled, bool isLoggingRegistered)
     {
         _logger = logger;
         LogEnabled = logEnabled;
+
+        _isLoggingRegistered = isLoggingRegistered;
     }
 
     /// <summary>
@@ -97,6 +105,17 @@ internal class ScheduleLogger : IScheduleLogger
     }
 
     /// <summary>
+    /// 获取结构化日志输出元数据
+    /// </summary>
+    internal static Lazy<Tuple<Type, MethodInfo>> _LogValuesFormatterMetadata = new Lazy<Tuple<Type, MethodInfo>>(() =>
+    {
+        var logValuesFormatterType = Type.GetType("Microsoft.Extensions.Logging.LogValuesFormatter, Microsoft.Extensions.Logging.Abstractions");
+        var formatMethod = logValuesFormatterType.GetMethod("Format", BindingFlags.Public | BindingFlags.Instance);
+
+        return Tuple.Create(logValuesFormatterType, formatMethod);
+    });
+
+    /// <summary>
     /// 记录日志
     /// </summary>
     /// <param name="logLevel">日志级别</param>
@@ -108,13 +127,17 @@ internal class ScheduleLogger : IScheduleLogger
         // 如果未启用日志记录则直接返回
         if (!LogEnabled) return;
 
-        if (logLevel == LogLevel.Error)
+        // 检查是否注册了日志输出程序
+        if (_isLoggingRegistered)
         {
-            _logger.LogError(ex, message, args);
+            _logger.Log(logLevel, ex, message, args);
         }
         else
         {
-            _logger.Log(logLevel, message, args);
+            var (logValuesFormatterType, formatMethod) = _LogValuesFormatterMetadata.Value;
+            var formatMessage = formatMethod.Invoke(Activator.CreateInstance(logValuesFormatterType, [message]), new object[] { args });
+
+            Console.WriteLine(formatMessage);
         }
     }
 }

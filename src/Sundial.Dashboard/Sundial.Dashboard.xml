@@ -88,6 +88,11 @@
             启用目录浏览
             </summary>
         </member>
+        <member name="P:Sundial.ScheduleUIOptions.Title">
+            <summary>
+            看板标题
+            </summary>
+        </member>
         <member name="P:Sundial.ScheduleUIOptions.DisableOnProduction">
             <summary>
             生产环境关闭
